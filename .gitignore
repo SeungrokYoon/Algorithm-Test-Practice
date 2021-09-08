@@ -1,3 +1,5 @@
 #ignore .idea directory file
 .idea/
 /.idea
+#ignore an entire directory
+/.idea/
