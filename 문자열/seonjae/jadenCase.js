@@ -29,8 +29,7 @@ function solution(s) {
 const jadenCase = (string) => {
   if (string === "") return "";
 
-  const res = string[0].toUpperCase() + string.slice(1);
-  return res;
+  return string[0].toUpperCase() + string.slice(1);
 };
 
 function solution(s) {
