@@ -4,7 +4,12 @@ function solution(s) {
   let cnt = 1;
   let scope = 1;
 
-  while (scope <= s.length) {
+  // 승록님이 제안해주신 대로 length가 1인 경우만 따로 빼고
+  // 탐색을 반만 돌려도 정상적으로 테스트 통과되네요
+
+  if (s.length === 1) return 1;
+
+  while (scope <= s.length / 2) {
     for (let i = 0; i < s.length; i += scope) {
       if (s.substr(i, scope) === s.substr(i + scope, scope)) {
         cnt++;
