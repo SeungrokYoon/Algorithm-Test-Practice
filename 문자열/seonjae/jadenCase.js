@@ -39,3 +39,8 @@ function solution(s) {
     .map(jadenCase)
     .join(" ");
 }
+
+
+const a = 'aaaaa'
+
+console.log(a.slice(0,14).length);
