@@ -4,4 +4,4 @@
 | -------- | ------ | ------------------------------- | ---------------------------------------------------------------- | ------------------------------ |
 | 20210908 | 문자열 | [프로그래머스] 문자열 압축      | [문제](https://programmers.co.kr/learn/courses/30/lessons/60057) | [풀이](./solution-20210908.js) |
 | 20210909 | 문자열 | [프로그래머스] 신규 아이디 추천 | [문제](https://programmers.co.kr/learn/courses/30/lessons/72410) | [풀이](./solution-20210909.js) |
-| 20210909 | 문자열 | [프로그래머스] 가장 긴 팰린드롬 | [문제](https://programmers.co.kr/learn/courses/30/lessons/12904) | [풀이](./solution-20210910.js) |
+| 20210910 | 문자열 | [프로그래머스] 가장 긴 팰린드롬 | [문제](https://programmers.co.kr/learn/courses/30/lessons/12904) | [풀이](./solution-20210910.js) |
