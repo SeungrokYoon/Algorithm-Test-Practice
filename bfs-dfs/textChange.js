@@ -20,7 +20,7 @@ function solution(begin, target, words) {
   const length = words.length;
   const visited = Array.from({ length }, () => false);
   const queue = [begin];
-
+  //bfs
   while (queue.length > 0) {
     result.count++;
 
@@ -34,10 +34,6 @@ function solution(begin, target, words) {
       for (let i = 0; i < length; i++) {
         if (visited[i]) continue;
         if (!isChanged(now, words[i])) continue;
-        if (words[i] === target) {
-          result.isChecked = true;
-          break;
-        }
 
         visited[i] = true;
         queue.push(words[i]);
