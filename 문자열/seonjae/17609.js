@@ -65,6 +65,12 @@ function solution(inputs) {
 
 solution(inputs);
 
+
+
+
+
+
+
 // 두번째 내가 짠 코드
 const readline = require("readline");
 const rl = readline.createInterface({
@@ -130,6 +136,7 @@ const solution = (inputs) => {
 // 세번째 다른사람코드 해석 후 고침
 const otherSolution = (inputs) => {
   inputs.forEach((string) => {
+    //abba
     const len = string.length;
     let left = 0;
     let right = len - 1;
