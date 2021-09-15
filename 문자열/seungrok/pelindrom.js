@@ -5,13 +5,13 @@ let input = fs.readFileSync("/dev/stdin").toString().split("\n");
 function isPelindrom(subSentence) {
 	let left = 0;
 	let right = subSentence.length - 1;
+
 	while (left <= right) {
-		if (subSentence[left] !== subSentence[right]) {
+		if (subSentence[left++] !== subSentence[right--]) {
 			return [false, left, right];
 		}
-		left++;
-		right--;
 	}
+
 	return [true, left, right];
 }
 
@@ -27,6 +27,7 @@ function solution(sentence) {
 	if (withoutRight || withoutLeft) {
 		return 1;
 	}
+
 	return 2;
 }
 
