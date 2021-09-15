@@ -44,3 +44,5 @@ function solution(s) {
 const a = 'aaaaa'
 
 console.log(a.slice(0,14).length);
+
+
