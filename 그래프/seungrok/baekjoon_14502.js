@@ -44,12 +44,9 @@ const solution = () => {
           el % M,
         ])
         // 유효한 벽범위 검증
-        const x1 = combi[0][0]
-        const y1 = combi[0][1]
-        const x2 = combi[1][0]
-        const y2 = combi[1][1]
-        const x3 = combi[2][0]
-        const y3 = combi[2][1]
+        const [x1,y1] = combi[0]
+        const [x2,y2] = combi[1]
+        const [x3,y3] = combi[2]
 
         if (
           tempGraph[x1][y1] === 0 &&
