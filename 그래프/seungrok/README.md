@@ -26,3 +26,4 @@
 | 2021-09-15 | 그래프 | 타겟넘버       | [프로그래머스] 코딩테스트 연습 > 깊이/너비 우선 탐색(DFS/BFS) | [링크](https://programmers.co.kr/learn/courses/30/lessons/43165) |
 | 2021-09-17 | 그래프 | 단지번호붙이기 | 백준                                                          | [링크](https://www.acmicpc.net/problem/2667)                     |
 | 2021-09-28 | 그래프 | 연구소         | 백준                                                          | [링크](https://www.acmicpc.net/problem/14502)                    |
+| 2021-10-01 | 그래프 | 유기농배추         | 백준                                                          | [링크](https://www.acmicpc.net/problem/1012)                    |
