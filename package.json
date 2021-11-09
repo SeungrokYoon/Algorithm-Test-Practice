@@ -1,0 +1,20 @@
+{
+  "name": "coding_study_repo",
+  "version": "1.0.0",
+  "description": "지은팀 9월 알고리즘 스터디 레포지토리 입니다",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SeungrokYoon/kdt_algorithm_study.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SeungrokYoon/kdt_algorithm_study/issues"
+  },
+  "homepage": "https://github.com/SeungrokYoon/kdt_algorithm_study#readme"
+}
