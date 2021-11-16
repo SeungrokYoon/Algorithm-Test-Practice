@@ -24,3 +24,4 @@
 | ---------- | ---- | --------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
 | 2021-11-09 | 일반 | 멀쩡한 사각형   | [프로그래머스] 코딩테스트 연습 > Summer/Winter Coding(2019)       | [링크](https://programmers.co.kr/learn/courses/30/lessons/62048)                     |
 | 2021-11-12 | 일반 | 뉴스 클러스터링 | [프로그래머스] 2018 KAKAO BLIND RECRUITMENT [1차] 뉴스 클러스터링 | [링크](https://programmers.co.kr/learn/courses/30/lessons/17677?language=javascript) |
+| 2021-11-16 | 일반 | 숫자 게임       | [프로그래머스] 코딩테스트 연습 > Summer/Winter Coding(~2018)      | [링크](https://programmers.co.kr/learn/courses/30/lessons/12987#)                    |
