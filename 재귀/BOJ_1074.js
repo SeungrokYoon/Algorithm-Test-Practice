@@ -1,14 +1,9 @@
-const [n, r, c] = require('fs')
-  .readFileSync('/dev/stdin')
-  .toString()
-  .split(' ')
-  .map((n) => +n)
+const [n, r, c] = require('fs').readFileSync('/dev/stdin').toString().split(' ')
 
 const solution = (n, r, c) => {
-  let count = -1
+  let count = 0
   const findZ = (size, startX, startY) => {
     if (startX === c && startY === r) {
-      count += 1
       return
     }
     if (size === 1) {
