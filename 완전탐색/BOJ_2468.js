@@ -15,15 +15,15 @@ const solution = (n, graph) => {
   let answer = 0
   const dx = [1, 0, -1, 0] // 우 하 좌 상
   const dy = [0, 1, 0, -1]
-  let height = 0
+  let rainHeight = 0
   let subAnswer = -1
-  const subTask = (n, height) => {
+  const subTask = (n, rainHeight) => {
     const visitedArray = new Array(n).fill(0).map((num) => new Array(n).fill(num))
     //각 좌표별로 BFS
     let safeSpaceCounter = 0
     for (let startY = 0; startY < n; startY++) {
       for (let startX = 0; startX < n; startX++) {
-        if (visitedArray[startY][startX] || graph[startY][startX] <= height) continue
+        if (visitedArray[startY][startX] || graph[startY][startX] <= rainHeight) continue
         safeSpaceCounter += 1
         const queue = []
         let queuePointer = 0
@@ -37,7 +37,7 @@ const solution = (n, graph) => {
             if (
               validateMatrix(n, newX, newY) &&
               !visitedArray[newY][newX] &&
-              graph[newY][newX] > height
+              graph[newY][newX] > rainHeight
             ) {
               visitedArray[newY][newX] = 1
               queue.push([newY, newX])
@@ -51,9 +51,9 @@ const solution = (n, graph) => {
   }
 
   while (subAnswer != 0) {
-    subAnswer = subTask(n, height)
+    subAnswer = subTask(n, rainHeight)
     answer = Math.max(answer, subAnswer)
-    height += 1
+    rainHeight += 1
   }
 
   return answer
