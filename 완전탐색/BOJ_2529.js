@@ -20,9 +20,9 @@ const solution = (k, arr) => {
     }
     dequeuePointer += 1
   }
-  const answer = queue.slice(dequeuePointer)
-  console.log(answer[answer.length - 1])
-  console.log(answer[0])
+
+  console.log(queue[queue.length - 1])
+  console.log(queue[dequeuePointer])
 }
 
 solution(k, arr)
