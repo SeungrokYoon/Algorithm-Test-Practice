@@ -7,16 +7,14 @@ const [[N, M], cards] = require('fs')
 
 const solution = (N, M, cards) => {
   let closestSum = 0
-  for (let count = 0; count < Math.pow(2, cards.length); count++) {
-    let cardCounter = 0
-    let tempSum = 0
-    for (let j = 0; j < cards.length; j++) {
-      if (count & (1 << j)) {
-        tempSum += cards[j]
-        cardCounter++
+  const length = cards.length
+  for (let first = 0; first < length - 2; first++) {
+    for (let second = first + 1; second < length - 1; second++) {
+      for (let third = second + 1; third < length; third++) {
+        const tempSum = cards[first] + cards[second] + cards[third]
+        if (tempSum > closestSum && tempSum <= M) closestSum = tempSum
       }
     }
-    if (cardCounter === 3 && tempSum > closestSum && tempSum < M) closestSum = tempSum
   }
   return closestSum
 }
