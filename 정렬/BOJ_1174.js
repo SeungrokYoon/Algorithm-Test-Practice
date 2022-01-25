@@ -1,29 +1,17 @@
-const input = parseInt(
-  require('fs')
-    .readFileSync(__dirname + '/test.txt')
-    .toString()
-    .trim(),
-)
+const input = parseInt(require('fs').readFileSync('/dev/stdin').toString().trim())
 
 const solution = (N) => {
-  let count = 0
-  let num = 0
-  while (count < N) {
-    const numStr = num.toString()
-    if (numStr.length > 10) {
-      console.log(-1)
-      return
+  let pointer = 0
+  const queue = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+  while (pointer < queue.length && queue[pointer].length < 11) {
+    const popped = queue[pointer]
+    for (let index = 0; index < 10; index++) {
+      if (1 * queue[index] > 1 * popped[0]) queue.push(queue[index] + popped)
     }
-    let isStop = false
-    for (let i = 0; i < numStr.length - 1; i++) {
-      if (numStr[i] > numStr[i + 1]) continue
-      isStop = true
-      break
-    }
-    if (!isStop) count++
-    num++
+    pointer++
   }
-  console.log(num - 1)
+  if (queue.length < N) return -1
+  return queue.map((i) => +i).sort((a, b) => a - b)[N - 1]
 }
 
-solution(input)
+console.log(solution(input))
