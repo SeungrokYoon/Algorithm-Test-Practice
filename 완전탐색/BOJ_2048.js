@@ -85,6 +85,42 @@ class Deque {
   }
 }
 
+const move = (direction) => {
+  if (direction === 0) {
+    // 아래에서 위로 합침
+    for (let col = 0; col < N; col++) {
+      for (let row = 0; row < N; row++) {
+        get(row, col)
+      }
+      merge(0, col, 1, 0)
+    }
+  } else if (direction === 1) {
+    // 위에서 아래로 합침
+    for (let col = 0; col < N; col++) {
+      for (let row = N - 1; row >= 0; row--) {
+        get(row, col)
+      }
+      merge(N - 1, col, -1, 0)
+    }
+  } else if (direction === 2) {
+    // 오른쪽에서 왼쪽으로 합침
+    for (let row = 0; row < N; row++) {
+      for (let col = 0; col < N; col++) {
+        get(row, col)
+      }
+      merge(row, 0, 0, 1)
+    }
+  } else {
+    // 왼쪽에서 오른쪽으로 합침
+    for (let row = 0; row < N; row++) {
+      for (let col = N - 1; col >= 0; col--) {
+        get(row, col)
+      }
+      merge(row, N - 1, 0, 1)
+    }
+  }
+}
+
 const get = (row, col) => {
   if (originalGraph[row][col] !== 0) {
     deque.pushRight(originalGraph[row][col])
@@ -92,17 +128,30 @@ const get = (row, col) => {
   }
 }
 
-const merge = (row, col, dRow, dCol){
-  
+const merge = (row, col, dRow, dCol) => {
+  while (deque.size) {
+    const popped = deque.popLeft()
+    if (!originalGraph[row][col]) {
+      originalGraph[row][col] = popped
+    } else if (originalGraph[row][col] === popped) {
+      originalGraph[row][col] = 2 * popped
+      row, (col = row + dRow), col + dCol
+    } else {
+      row, (col = row + dRow), col + dCol
+      originalGraph[row][col] = popped
+    }
+  }
 }
 
 const solution = (count) => {
   if (count === 5) {
-    const max = 0
-    return max
+    for (const i of Array(N).keys()) {
+      answer = Math.max(answer, Math.max(...originalGraph[i]))
+    }
+    return
   }
   const memoizedGraph = []
-  memoizedGraph.forEach((row) => memoizedGraph.push([...row]))
+  originalGraph.forEach((row) => memoizedGraph.push([...row]))
 
   for (let loop = 0; loop < 4; loop++) {
     move(loop)
@@ -112,5 +161,7 @@ const solution = (count) => {
   }
 }
 
+let answer = 0
 const deque = new Deque()
-const result = solution(1)
+solution(0)
+console.log(answer)
