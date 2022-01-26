@@ -135,16 +135,18 @@ const merge = (row, col, dRow, dCol) => {
       originalGraph[row][col] = popped
     } else if (originalGraph[row][col] === popped) {
       originalGraph[row][col] = 2 * popped
-      row, (col = row + dRow), col + dCol
+      row = row + dRow
+      col = col + dCol
     } else {
-      row, (col = row + dRow), col + dCol
+      row = row + dRow
+      col = col + dCol
       originalGraph[row][col] = popped
     }
   }
 }
 
 const solution = (count) => {
-  if (count === 5) {
+  if (count === 1) {
     for (const i of Array(N).keys()) {
       answer = Math.max(answer, Math.max(...originalGraph[i]))
     }
