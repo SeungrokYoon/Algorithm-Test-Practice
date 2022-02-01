@@ -6,25 +6,17 @@ const input = require('fs')
 const N = input.shift()
 
 const solution = (n, arr) => {
-  let pointer = 0
-  const memoizationTable = []
-  memoizationTable.push([
-    arr[0][pointer],
-    arr[1][pointer],
-    Math.max(arr[0][pointer], arr[1][pointer]),
-  ])
-  pointer++
-  while (pointer < n) {
-    const previous = memoizationTable[pointer - 1]
-    const prePreviousMax = pointer >= 2 ? Math.max(...memoizationTable[pointer - 2]) : 0
-    const currentMax = Math.max(arr[0][pointer], arr[1][pointer])
-    const first = previous[1] + arr[0][pointer]
-    const second = previous[0] + arr[1][pointer]
-    const third = prePreviousMax + currentMax
-    memoizationTable.push([first, second, third])
-    pointer++
+  const temp = new Array(2).fill(0)
+  const memoizationTable = temp.map((i) => new Array(n).fill(0))
+  memoizationTable[0][0] = arr[0][0]
+  memoizationTable[1][0] = arr[1][0]
+  for (let i = 1; i < n; i++) {
+    memoizationTable[0][i] =
+      Math.max(memoizationTable[1][i - 1], i >= 2 ? memoizationTable[1][i - 2] : 0) + arr[0][i]
+    memoizationTable[1][i] =
+      Math.max(memoizationTable[0][i - 1], i >= 2 ? memoizationTable[0][i - 2] : 0) + arr[1][i]
   }
-  return Math.max(...memoizationTable[n - 1])
+  return Math.max(memoizationTable[0][n - 1], memoizationTable[1][n - 1])
 }
 
 //정답 도출
