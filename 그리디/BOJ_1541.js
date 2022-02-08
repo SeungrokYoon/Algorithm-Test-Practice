@@ -1,5 +1,5 @@
 const input = require('fs')
-  .readFileSync(__dirname + '/test.txt')
+  .readFileSync('/dev/stdin')
   .toString()
   .trim()
   .split(/([+  -])/g)
@@ -15,9 +15,9 @@ const solution = () => {
       if (currentOperator === -1) {
         sum -= minus
         minus = 0
+        continue
       }
       currentOperator = -1
-      continue
     } else {
       const num = element * 1
       currentOperator === -1 ? (minus += num) : (sum += num)
