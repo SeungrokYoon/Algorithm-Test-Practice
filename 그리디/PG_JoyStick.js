@@ -47,3 +47,5 @@ function solution(name) {
 
 console.log(solution('BAJAAAAAAZ'))
 console.log(solution('BBBBAAAAABA'))
+
+
