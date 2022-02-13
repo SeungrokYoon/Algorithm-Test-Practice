@@ -11,24 +11,6 @@ function solution(name) {
     return 0
   }
 
-  //순방향 (우측): 0번 인덱스에서 가장 먼 A가아닌 철자의 인덱스
-  let toRight = upDown
-  for (let i = name.length - 1; i >= 0; i--) {
-    if (charCodeArr[i] !== 0) {
-      toRight += i
-      break
-    }
-  }
-
-  //역방향 (좌측): 0번 인덱스에서 우측으로 가장 가까운 A가 아닌 철자의 인덱스까지 역방향 거리
-  let toLeft = upDown
-  for (let i = 0; i < name.length; i++) {
-    if (charCodeArr[i] !== 0) {
-      toLeft += name.length - i
-      break
-    }
-  }
-
   let toRightLeft = name.length - 1
   let toLeftRight = name.length - 1
   //순->역 : 0번 인덱스부터 시작하여 차례대로 가장 작은 순->역 거리를 구한다.
@@ -54,5 +36,5 @@ function solution(name) {
   toRightLeft += upDown
   toLeftRight += upDown
 
-  return Math.min(toRight, toLeft, toRightLeft, toLeftRight)
+  return Math.min(toRightLeft, toLeftRight)
 }
