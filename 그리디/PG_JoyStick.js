@@ -1,7 +1,7 @@
 //https://programmers.co.kr/learn/courses/30/lessons/42860
 function solution(name) {
   let answer = 0
-  let nextIndex = 0
+  const result = []
   let start = new Array(name.length).fill('A')
 
   const chCodeArr = name
@@ -33,19 +33,20 @@ function solution(name) {
     }
     return { closestNextIndex: name.length, distance: name.length }
   }
-
-  while (start.join('') !== name) {
-    answer += chCodeArr[nextIndex]
-    start[nextIndex] = name[nextIndex]
-    const next = findClosestNum(nextIndex)
-    if (next.closestNextIndex === name.length) return answer
-    nextIndex = next.closestNextIndex
-    answer += next.distance
+  for (let nextIndex = 0; nextIndex < name.length; nextIndex++) {
+    while (start.join('') !== name) {
+      answer += chCodeArr[nextIndex]
+      start[nextIndex] = name[nextIndex]
+      const next = findClosestNum(nextIndex)
+      if (next.closestNextIndex === name.length) return answer
+      nextIndex = next.closestNextIndex
+      answer += next.distance
+    }
+    result.push(answer)
+    answer = 0
   }
-  return answer
+  return result
 }
 
 console.log(solution('BAJAAAAAAZ'))
 console.log(solution('BBBBAAAAABA'))
-
-
