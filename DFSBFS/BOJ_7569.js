@@ -5,71 +5,55 @@ const input = require('fs')
   .split('\n')
 
 const [M, N, H] = input.shift().split(' ').map(Number)
-const tomatos = []
-const ripeTomatos = []
-
-//1. 3차원 배열만들기 접근 순서는 [H][N][M]
-let temp = []
-temp.push(input[0].split(' ').map(Number))
-for (let i = 1; i < input.length; i++) {
-  const line = input[i].split(' ').map(Number)
-  const floor = Math.floor(i / N)
-  const row = i % N
+const ripeTomatosArr = []
+let emptyTomatos = 0
+let unripeTomatos = 0
+let ripeTomatos = 0
+const tomatos = input.map((line, index) => {
+  const convertedLine = line.split(' ').map(Number)
+  const row = index
   const day = 0
-  line.forEach((num, col) => {
-    num === 1 ? ripeTomatos.push({ floor, row, col, day }) : ''
+  convertedLine.forEach((num, col) => {
+    if (num === -1) {
+      emptyTomatos += 1
+    } else if (num === 1) {
+      ripeTomatos += 1
+      ripeTomatosArr.push({ row, col, day })
+    } else {
+      unripeTomatos += 1
+    }
   })
-  if (i % N === 0) {
-    tomatos.push([...temp])
-    temp = []
-  }
-  temp.push(line)
-}
-tomatos.push(temp)
+  return convertedLine
+})
 
-//2. 총 토마토의 개수세기
-const getTypeTomatos = (tomatos, type) => {
-  const tomatoType = { ripe: 1, unripe: 0, empty: -1 }
-  let count = 0
-  tomatos.forEach((floor) => {
-    floor.forEach((row) => {
-      count += row.filter((x) => x === tomatoType[type]).length
-    })
-  })
-  return count
-}
-
-const matrixValidator = (h, n, m) => {
-  return 0 <= h && h < H && 0 <= n && n < N && 0 <= m && m < M
+const matrixValidator = (row, col) => {
+  return 0 <= row && row < H * N && 0 <= col && col < M
 }
 
 const solution = () => {
-  let totalTomatos = N * H * M - getTypeTomatos(tomatos, 'empty')
-  let unripeTomatos = getTypeTomatos(tomatos, 'unripe')
-  //이미 익어있는 경우
-  if (getTypeTomatos(tomatos, 'ripe') === totalTomatos) return 0
-  //그렇지 않은 경우
-  const dFloor = [1, -1, 0, 0, 0, 0]
-  const dRow = [0, 0, 1, 0, -1, 0]
+  if (ripeTomatos === N * H * M - emptyTomatos) return 0
+  const dRow = [N, N * -1, 1, 0, -1, 0]
   const dCol = [0, 0, 0, 1, 0, -1]
-  while (ripeTomatos.length) {
-    const { floor, row, col, day } = ripeTomatos.shift()
+  let pointer = 0
+  let answer = 0
+  while (ripeTomatosArr.length > pointer) {
+    const { row, col, day } = ripeTomatosArr[pointer]
+    console.log('current: ', ripeTomatosArr[pointer])
+    answer = day
     for (let i = 0; i < 6; i++) {
-      const nextFloor = dFloor[i] + floor
       const nextRow = dRow[i] + row
       const nextCol = dCol[i] + col
       const nextDay = day + 1
-      if (
-        matrixValidator(nextFloor, nextRow, nextCol) &&
-        tomatos[nextFloor][nextRow][nextCol] === 0
-      ) {
-        tomatos[nextFloor][nextRow][nextCol] = 1
+      if (matrixValidator(nextRow, nextCol) && tomatos[nextRow][nextCol] === 0) {
+        tomatos[nextRow][nextCol] = 1
         unripeTomatos--
-        ripeTomatos.push({ floor: nextFloor, row: nextRow, col: nextCol, day: nextDay })
+        ripeTomatosArr.push({ row: nextRow, col: nextCol, day: nextDay })
+        console.log('pushed: ', { row: nextRow, col: nextCol, day: nextDay })
       }
     }
-    if (!unripeTomatos) return day + 1
+    pointer++
   }
+  if (!unripeTomatos) return answer
   return -1
 }
 
