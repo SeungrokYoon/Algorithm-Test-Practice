@@ -5,7 +5,7 @@ const N =
     .trim() * 1
 
 const solution = () => {
-  if (N === 1) console.log(0)
+  if (N === 1) return 0
   const arr = Array.from({ length: N + 1 }, () => N + 1)
   arr[1] = 0
   for (let i = 1; i < N + 1; i++) {
