@@ -32,34 +32,31 @@ const solution = () => {
       tempGraph[pick[0]][pick[1]] = 0
     }
     //이후 각 좌표를 순회하며 바이러스가 있는 곳(0인 부분)부터 BFS 진행
-    for (let row = 0; row < N; row++) {
-      for (let col = 0; col < N; col++) {
-        if (tempGraph[row][col] !== 0) continue
-        const queue = []
-        queue.push([row, col])
-        while (queue.length) {
-          const [row, col] = queue.shift()
-          for (let i = 0; i < 4; i++) {
-            const nextRow = row + dRow[i]
-            const nextCol = col + dCol[i]
-            if (0 <= nextRow && nextRow < N && 0 <= nextCol && nextCol < N) {
-              if (tempGraph[nextRow][nextCol] === -1) {
-                //처음 지나가는 곳
-                tempGraph[nextRow][nextCol] = tempGraph[row][col] + 1
-                queue.push([nextRow, nextCol])
-              } else if (tempGraph[nextRow][nextCol] !== -2 && tempGraph[nextRow][nextCol] !== 0) {
-                //이미 지나가긴 했는데, 최소값을 갱신해주기
-                if (tempGraph[row][col] + 1 < tempGraph[nextRow][nextCol]) {
-                  tempGraph[nextRow][nextCol] = tempGraph[row][col] + 1
-                  queue.push([nextRow, nextCol])
-                }
-              }
-            }
-          }
+    //큐 초기값
+    const queue = []
+    pickCombi.forEach((combi) => {
+      queue.push(combi)
+    })
+    //큐에 넣고 BFS돌기
+    while (queue.length) {
+      const [row, col] = queue.shift()
+      for (let i = 0; i < 4; i++) {
+        const nextRow = row + dRow[i]
+        const nextCol = col + dCol[i]
+        if (
+          0 <= nextRow &&
+          nextRow < N &&
+          0 <= nextCol &&
+          nextCol < N &&
+          tempGraph[nextRow][nextCol] === -1
+        ) {
+          //처음 접근하는 위치
+          tempGraph[nextRow][nextCol] = tempGraph[row][col] + 1
+          queue.push([nextRow, nextCol])
         }
       }
     }
-    console.log(tempGraph)
+
     //-1의 개수가 존재하는지 파악(빈칸). -1이존재하지 않는다면 최대값 리턴하고, answer와 최소값
     let isComplete = true
     let tempMax = 0
@@ -71,8 +68,7 @@ const solution = () => {
     })
     if (isComplete) answer.push(tempMax)
   }
-
-  const result = Math.min(...answer)
+  const result = answer.length ? Math.min(...answer) : -1
   return result
 }
 
