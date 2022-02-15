@@ -8,21 +8,17 @@ const input = require('fs')
 const N = input.shift()
 
 const solution = (n) => {
-  let zeros = 0
-  let ones = 0
-  const fibonacci = (n) => {
-    if (n == 0) {
-      zeros++
-      return 0
-    } else if (n === 1) {
-      ones++
-      return 1
+  const fibo = Array.from({ length: n + 1 }).fill(0)
+  for (let i = 0; i < n + 1; i++) {
+    if (i === 0) {
+      fibo[0] = [1, 0]
+    } else if (i === 1) {
+      fibo[1] = [0, 1]
     } else {
-      return fibonacci(n - 1) + fibonacci(n - 2)
+      fibo[i] = [fibo[i - 1][0] + fibo[i - 2][0], fibo[i - 1][1] + fibo[i - 2][1]]
     }
   }
-  fibonacci(n)
-  console.log(zeros, ones)
+  console.log(fibo[n][0], fibo[n][1])
 }
 for (let i = 0; i < N; i++) {
   solution(input[i])
