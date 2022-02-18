@@ -1,4 +1,8 @@
-const input = require('fs').readFileSync('/dev/stdin').toString().trim().split('\n')
+const input = require('fs')
+  .readFileSync(__dirname + '/test.txt')
+  .toString()
+  .trim()
+  .split('\n')
 
 const [N, M, V] = input.shift().split(' ').map(Number)
 
@@ -10,46 +14,36 @@ input.forEach((str) => {
 })
 adjList.forEach((l) => l.sort((a, b) => a - b))
 
+const dfsVisited = Array.from({ length: N + 1 }, () => false)
+const dfsResult = []
 const DFS = (start) => {
-  let result = ''
-  const visited = Array.from({ length: N + 1 }, () => false)
-  const stack = []
-  stack.push(start)
-  while (stack.length) {
-    const popped = stack.pop()
-    if (!visited[popped]) {
-      visited[popped] = true
-      result += popped + ' '
-    }
-    for (let i = adjList[popped].length - 1; i >= 0; i--) {
-      const to = adjList[popped][i]
-      if (!visited[to]) {
-        stack.push(to)
-      }
-    }
+  if (dfsVisited[start]) return
+  dfsVisited[start] = true
+  dfsResult.push(start)
+  for (const nextNode of adjList[start]) {
+    DFS(nextNode)
   }
-  return result
 }
 
+const bfsVisited = Array.from({ length: N + 1 }, () => false)
+const bfsResult = []
 const BFS = (start) => {
-  let result = ''
-  const visited = Array.from({ length: N + 1 }, () => false)
   const queue = []
   queue.push(start)
-  visited[start] = true
+  bfsVisited[start] = true
+  bfsResult.push(start)
   while (queue.length) {
     const dequeued = queue.shift()
-    result += dequeued + ' '
-    for (let i = 0; i < adjList[dequeued].length; i++) {
-      const to = adjList[dequeued][i]
-      if (!visited[to]) {
-        visited[to] = true
-        queue.push(to)
-      }
+    for (const nextNode of adjList[dequeued]) {
+      if (bfsVisited[nextNode]) continue
+      bfsVisited[nextNode] = true
+      queue.push(nextNode)
+      bfsResult.push(nextNode)
     }
   }
-  return result
 }
 
-console.log(DFS(V))
-console.log(BFS(V))
+DFS(V)
+BFS(V)
+console.log(dfsResult.join(' '))
+console.log(bfsResult.join(' '))
