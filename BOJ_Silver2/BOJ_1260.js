@@ -10,11 +10,11 @@ input.forEach((str) => {
 })
 adjList.forEach((l) => l.sort((a, b) => a - b))
 
-const DFS = () => {
+const DFS = (start) => {
   let result = ''
   const visited = Array.from({ length: N + 1 }, () => false)
   const stack = []
-  stack.push(V)
+  stack.push(start)
   while (stack.length) {
     const popped = stack.pop()
     if (!visited[popped]) {
@@ -31,12 +31,12 @@ const DFS = () => {
   return result
 }
 
-const BFS = () => {
+const BFS = (start) => {
   let result = ''
   const visited = Array.from({ length: N + 1 }, () => false)
   const queue = []
-  queue.push(V)
-  visited[V] = true
+  queue.push(start)
+  visited[start] = true
   while (queue.length) {
     const dequeued = queue.shift()
     result += dequeued + ' '
@@ -51,5 +51,5 @@ const BFS = () => {
   return result
 }
 
-console.log(DFS())
-console.log(BFS())
+console.log(DFS(V))
+console.log(BFS(V))
