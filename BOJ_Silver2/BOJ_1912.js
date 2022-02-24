@@ -7,7 +7,7 @@ const solution = () => {
   const dp = Array.from({ length: N }, () => 0)
   dp[0] = arr[0]
   for (let i = 1; i < N; i++) {
-    dp[i] = Math.max(Math.max(arr[i - 1], dp[i - 1]), 0) + arr[i]
+    dp[i] = Math.max(dp[i - 1], 0) + arr[i]
   }
   return Math.max(...dp)
 }
