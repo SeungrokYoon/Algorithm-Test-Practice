@@ -1,25 +1,21 @@
 class MinHeap {
   constructor() {
     this.heap = []
-    this.size = 0
   }
   insert(v) {
     this.heap.push(v)
-    this.size += 1
-    this.upHeap(this.size - 1)
+    this.upHeap(this.heap.length - 1)
   }
   getMin() {
-    if (this.size === 0) return 0
-    if (this.size === 1) {
+    if (this.heap.length === 0) return 0
+    if (this.heap.length === 1) {
       const min = this.heap[0]
-      this.size -= 1
       this.heap.pop()
       return min
     }
     const min = this.heap[0]
-    const temp = this.heap[this.size - 1]
+    const temp = this.heap[this.heap.length - 1]
     this.heap.pop()
-    this.size -= 1
     this.heap[0] = temp
     this.downHeap(0)
     return min
@@ -28,51 +24,30 @@ class MinHeap {
     console.log(this.heap)
   }
   getSize() {
-    return this.size
+    return this.heap.length
   }
-  upHeap(index) {
-    if (index === 0) return
-    const parentIndex = Math.floor(index / 2)
-    if (this.heap[parentIndex] > this.heap[index]) {
-      const temp = this.heap[parentIndex]
-      this.heap[parentIndex] = this.heap[index]
-      this.heap[index] = temp
-      this.upHeap(parentIndex)
+  upHeap(pos) {
+    let parentIndex = parseInt((pos - 1) / 2)
+    while (this.heap[parentIndex] > this.heap[pos]) {
+      console.log(pos, parentIndex)
+      const tmp = this.heap[pos]
+      this.heap[pos] = this.heap[parentIndex]
+      this.heap[parentIndex] = tmp
+      pos = parentIndex
+      parentIndex = parseInt((pos - 1) / 2)
     }
   }
-  downHeap(index) {
-    const leftChildIndex = 2 * index + 1
-    const rightChildIndex = 2 * index + 2
-    let nextIndex = index
-    //더 작은 child 찾아주기
-    if (leftChildIndex < this.size && rightChildIndex < this.size) {
-      if (
-        this.heap[leftChildIndex] <= this.heap[rightChildIndex] &&
-        this.heap[leftChildIndex] < this.heap[index]
-      ) {
-        nextIndex = leftChildIndex
-      } else if (
-        this.heap[leftChildIndex] >= this.heap[rightChildIndex] &&
-        this.heap[rightChildIndex] < this.heap[index]
-      ) {
-        nextIndex = rightChildIndex
-      } else {
-        return
-      }
-    } else if (leftChildIndex < this.size && rightChildIndex >= this.size) {
-      if (this.heap[leftChildIndex] < this.heap[index]) {
-        nextIndex = leftChildIndex
-      } else {
-        return
-      }
-    } else {
-      //왼쪽은 안되는데 오른쪽이 될 리는 없음
-      return
+  downHeap(pos) {
+    let tmp = this.heap[pos],
+      child
+    while (pos < Math.floor(this.heap.length / 2)) {
+      child = pos * 2 + 1
+      if (child < this.heap.length && this.heap[child] > this.heap[child + 1]) child++
+      if (tmp <= this.heap[child]) break
+      this.heap[pos] = this.heap[child]
+      pos = child
     }
-    const temp = this.heap[nextIndex]
-    this.heap[nextIndex] = this.heap[index]
-    this.heap[index] = temp
-    this.downHeap(nextIndex)
+    this.heap[pos] = tmp
   }
 }
 
