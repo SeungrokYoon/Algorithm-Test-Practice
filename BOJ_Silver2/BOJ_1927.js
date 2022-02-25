@@ -29,7 +29,6 @@ class MinHeap {
   upHeap(pos) {
     let parentIndex = parseInt((pos - 1) / 2)
     while (this.heap[parentIndex] > this.heap[pos]) {
-      console.log(pos, parentIndex)
       const tmp = this.heap[pos]
       this.heap[pos] = this.heap[parentIndex]
       this.heap[parentIndex] = tmp
