@@ -28,27 +28,24 @@ class MinHeap {
     return this.heap.length
   }
   upHeap(pos) {
-    let parentIndex = parseInt((pos - 1) / 2)
-    while (this.heap[parentIndex] > this.heap[pos]) {
-      console.log(pos, parentIndex)
+    while (this.heap[parseInt((pos - 1) / 2)] > this.heap[pos]) {
       const tmp = this.heap[pos]
-      this.heap[pos] = this.heap[parentIndex]
-      this.heap[parentIndex] = tmp
-      pos = parentIndex
-      parentIndex = parseInt((pos - 1) / 2)
+      this.heap[pos] = this.heap[parseInt((pos - 1) / 2)]
+      this.heap[parseInt((pos - 1) / 2)] = tmp
+      pos = parseInt((pos - 1) / 2)
     }
   }
   downHeap(pos) {
-    let tmp = this.heap[pos],
-      child
     while (pos < Math.floor(this.heap.length / 2)) {
-      child = pos * 2 + 1
-      if (child < this.heap.length && this.heap[child] > this.heap[child + 1]) child++
-      if (tmp <= this.heap[child]) break
-      this.heap[pos] = this.heap[child]
-      pos = child
+      let childIndex = pos * 2 + 1
+      if (childIndex + 1 < this.heap.length && this.heap[childIndex] > this.heap[childIndex + 1])
+        childIndex++
+      if (this.heap[pos] <= this.heap[childIndex]) break
+      const temp = this.heap[pos]
+      this.heap[pos] = this.heap[childIndex]
+      this.heap[childIndex] = temp
+      pos = childIndex
     }
-    this.heap[pos] = tmp
   }
 }
 
