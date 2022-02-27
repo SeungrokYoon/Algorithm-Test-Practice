@@ -1,55 +1,3 @@
-//최소힙 구현
-class MinHeap {
-  constructor() {
-    this.heap = []
-  }
-  insert(v) {
-    this.heap.push(v)
-    this.upHeap(this.heap.length - 1)
-  }
-  getMin() {
-    if (this.heap.length === 0) return 0
-    if (this.heap.length === 1) {
-      const min = this.heap[0]
-      this.heap.pop()
-      return min
-    }
-    const min = this.heap[0]
-    const temp = this.heap[this.heap.length - 1]
-    this.heap.pop()
-    this.heap[0] = temp
-    this.downHeap(0)
-    return min
-  }
-  print() {
-    console.log(this.heap)
-  }
-  getSize() {
-    return this.heap.length
-  }
-  upHeap(pos) {
-    while (this.heap[parseInt((pos - 1) / 2)] > this.heap[pos]) {
-      const tmp = this.heap[pos]
-      this.heap[pos] = this.heap[parseInt((pos - 1) / 2)]
-      this.heap[parseInt((pos - 1) / 2)] = tmp
-      pos = parseInt((pos - 1) / 2)
-    }
-  }
-  downHeap(pos) {
-    while (pos < Math.floor(this.heap.length / 2)) {
-      let childIndex = pos * 2 + 1
-      if (childIndex + 1 < this.heap.length && this.heap[childIndex] > this.heap[childIndex + 1])
-        childIndex++
-      if (this.heap[pos] <= this.heap[childIndex]) break
-      const temp = this.heap[pos]
-      this.heap[pos] = this.heap[childIndex]
-      this.heap[childIndex] = temp
-      pos = childIndex
-    }
-  }
-}
-
-//최대힙 구현
 class MaxHeap {
   constructor() {
     this.heap = []
@@ -100,3 +48,23 @@ class MaxHeap {
     console.log(this.heap.length)
   }
 }
+
+const input = require('fs')
+  .readFileSync(__dirname + '/test.txt')
+  .toString()
+  .trim()
+  .split('\n')
+  .map(Number)
+
+const N = input.shift()
+const heap = new MaxHeap()
+let result = ''
+for (let i = 0; i < N; i++) {
+  if (input[i] === 0) {
+    result += `${heap.getMax()}\n`
+  } else {
+    heap.insert(input[i])
+  }
+  heap.print()
+}
+console.log(result.trim())
