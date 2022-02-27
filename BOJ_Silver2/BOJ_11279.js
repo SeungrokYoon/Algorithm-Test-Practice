@@ -33,7 +33,7 @@ class MaxHeap {
       //자식 중 더 큰 자식 구하기,
       if (childIndex + 1 < this.heap.length && this.heap[childIndex] < this.heap[childIndex + 1])
         childIndex++ //오른쪽 자식이 존재하고, 오른쪽 자식이 더 크면 오른쪽을 선택
-      if (this.heap[pos] >= this.heap.length[childIndex]) break
+      if (this.heap[pos] >= this.heap[childIndex]) break
       //만약 선택된 노드값이 교환할 수 없다면 break
       const temp = this.heap[pos]
       this.heap[pos] = this.heap[childIndex]
