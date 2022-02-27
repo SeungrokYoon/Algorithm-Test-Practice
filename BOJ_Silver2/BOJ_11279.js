@@ -7,13 +7,11 @@ class MaxHeap {
     this.upHeap(this.heap.length - 1)
   }
   upHeap(pos) {
-    let parentIndex = parseInt((pos - 1) / 2)
-    while (this.heap[pos] > this.heap[parentIndex]) {
+    while (this.heap[pos] > this.heap[parseInt((pos - 1) / 2)]) {
       const temp = this.heap[pos]
-      this.heap[pos] = this.heap[parentIndex]
-      this.heap[parentIndex] = temp
-      pos = parentIndex
-      parentIndex = parseInt((pos - 1) / 2)
+      this.heap[pos] = this.heap[parseInt((pos - 1) / 2)]
+      this.heap[parseInt((pos - 1) / 2)] = temp
+      pos = parseInt((pos - 1) / 2)
     }
   }
   getMax() {
@@ -37,8 +35,6 @@ class MaxHeap {
         childIndex++ //오른쪽 자식이 존재하고, 오른쪽 자식이 더 크면 오른쪽을 선택
       if (this.heap[pos] >= this.heap.length[childIndex]) break
       //만약 선택된 노드값이 교환할 수 없다면 break
-      console.log('   pos changed with children ', pos, childIndex)
-      console.log(`   heap`, this.heap)
       const temp = this.heap[pos]
       this.heap[pos] = this.heap[childIndex]
       this.heap[childIndex] = temp
