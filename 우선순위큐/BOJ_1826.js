@@ -59,21 +59,22 @@ const input = require('fs')
   .split('\n')
 
 const N = input.shift() * 1
-let [totalDist, currentFuel] = input[input.length - 1].split(' ').map(Number)
+let [totalDist, currentLocation] = input.pop().split(' ').map(Number)
 let count = 0
-//멈추는 행위를 최소화 하려 한다.=>현재 연료로 갈 수 있는 최대거리를 찾기 === 최소부터 거르기
-//만약 기름이 부족하다면, 현재 연료로 갈 수 있는 주유소들 중, 가장 많은 연료를 채울 수 있는 곳을 방문하기!
+let pointer = 0
 const arr = input.map((str) => str.split(' ').map(Number)).sort((a, b) => a[0] - b[0])
 const maxHeap = new MaxHeap()
-for (const station of arr) {
-  const [dist, toFill] = station
-  if (currentFuel >= dist) {
+while (currentLocation < totalDist) {
+  while (pointer < N && arr[pointer][0] <= currentLocation) {
+    const [dist, toFill] = arr[pointer]
     maxHeap.insert({ dist, toFill })
-  } else {
-    if (!maxHeap.size()) break
-    currentFuel += maxHeap.getMax().toFill
-    maxHeap.insert({ dist, toFill })
-    count++
+    pointer++
   }
+  if (!maxHeap.size()) {
+    count = -1
+    break
+  }
+  currentLocation += maxHeap.getMax().toFill
+  count++
 }
-console.log(totalDist <= currentFuel ? count : -1)
+console.log(count)
