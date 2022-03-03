@@ -51,13 +51,14 @@ class MinHeap {
 const readline = require('readline')
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
 let N = 0
+let lineCounter = 0
 const minHeap = new MinHeap()
 rl.on('line', (line) => {
   line
     .split(' ')
     .map(Number)
     .forEach((num, _, arr) => {
-      if (arr.length === 1) {
+      if (lineCounter === 0) {
         N = num
       } else {
         if (minHeap.size() < N) {
@@ -67,7 +68,7 @@ rl.on('line', (line) => {
           minHeap.insert(num)
         }
       }
-      console.log(minHeap)
+      lineCounter++
     })
 }).on('close', () => {
   console.log(minHeap.pop())
