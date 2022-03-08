@@ -16,15 +16,15 @@ const findLowerBound = (left, right, arr, toFind) => {
   findLowerBound(left, mid - 1, arr, toFind)
 }
 
-const lisArr = []
+const dp = []
 for (let n of arr) {
-  if (lisArr.length === 0 || lisArr[lisArr.length - 1] < n) {
-    lisArr.push(n)
+  if (dp.length === 0 || dp[dp.length - 1] < n) {
+    dp.push(n)
   } else {
     lowerBound = 100001
-    findLowerBound(0, lisArr.length - 1, lisArr, n)
-    lisArr[lowerBound] = n
+    findLowerBound(0, dp.length - 1, dp, n)
+    dp[lowerBound] = n
   }
 }
 
-console.log(Math.min(arr.length - lisArr.length))
+console.log(Math.min(arr.length - dp.length))
