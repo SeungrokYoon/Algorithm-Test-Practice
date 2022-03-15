@@ -88,7 +88,7 @@ const dijkstra = (start) => {
 }
 
 let answer = 0
-const backDist = dijkstra(X).slice(0)
+const backDist = dijkstra(X)
 for (let i = 1; i < N + 1; i++) {
   const goDist = dijkstra(i)
   answer = Math.max(answer, goDist[X] + backDist[i])
