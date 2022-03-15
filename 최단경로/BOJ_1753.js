@@ -8,7 +8,7 @@ class MinHeap {
     let parent = Math.floor((currentIndex - 1) / 2)
     while (parent >= 0 && this.heap[parent].dist > this.heap[currentIndex].dist) {
       const temp = this.heap[parent]
-      this.heap[(parent = this.heap[currentIndex])]
+      this.heap[parent] = this.heap[currentIndex]
       this.heap[currentIndex] = temp
       currentIndex = parent
       parent = Math.floor((currentIndex - 1) / 2)
@@ -52,7 +52,6 @@ const input = require('fs')
 const [V, E] = input.shift().split(' ').map(Number)
 const start = input.shift() * 1
 const graph = Array.from({ length: V + 1 }, () => [])
-const distance = Array.from({ length: V + 1 }, () => Infinity)
 
 for (const row of input) {
   const [u, v, w] = row.split(' ').map(Number)
@@ -60,7 +59,9 @@ for (const row of input) {
 }
 
 const dijkstra = (start) => {
+  const distance = Array.from({ length: V + 1 }, () => Infinity)
   distance[start] = 0
+
   const minHeap = new MinHeap()
   minHeap.push({ current: start, dist: 0 })
   while (minHeap.size()) {
@@ -68,26 +69,26 @@ const dijkstra = (start) => {
     if (distance[current] < dist) {
       continue
     }
+
     for (const edge of graph[current]) {
       const [to, weight] = edge
-      const cost = dist + weight
-      if (cost < distance[to]) {
-        distance[to] = cost
-        minHeap.push({ current: to, dist: cost })
+      const newDist = dist + weight
+      if (newDist < distance[to]) {
+        distance[to] = newDist
+        minHeap.push({ current: to, dist: newDist })
       }
     }
   }
+  return distance.slice(1)
 }
 
-dijkstra(start)
+const result = dijkstra(start)
 let answer = ''
-distance.forEach((value, index) => {
-  if (index !== 0) {
-    if (value === Infinity) {
-      answer += 'INF' + '\n'
-    } else {
-      answer += value + '\n'
-    }
+result.forEach((value) => {
+  if (value === Infinity) {
+    answer += 'INF\n'
+  } else {
+    answer += `${value}\n`
   }
 })
 console.log(answer.trim())
