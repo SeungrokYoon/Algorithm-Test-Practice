@@ -53,7 +53,10 @@ const [V, E] = input[0].split(' ').map(Number)
 const start = +input[1]
 
 const genGraph = (input) => {
-  const graph = Array.from({ length: V + 1 }, () => [])
+  const graph = new Map()
+  for (let i = 1; i < V + 1; i++) {
+    graph[i] = []
+  }
   for (let i = 2; i < E + 2; i++) {
     const [u, v, w] = input[i].split(' ').map(Number)
     graph[u].push({ to: v, weight: w })
@@ -84,7 +87,6 @@ const dijkstra = (graph, start) => {
 }
 
 const graph = genGraph(input)
-console.log(graph)
 const result = dijkstra(graph, start)
 let answer = ''
 result.forEach((value) => {
