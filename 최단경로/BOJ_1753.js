@@ -49,16 +49,19 @@ const input = require('fs')
   .trim()
   .split('\n')
 
-const [V, E] = input.shift().split(' ').map(Number)
-const start = input.shift() * 1
-const graph = Array.from({ length: V + 1 }, () => [])
+const [V, E] = input[0].split(' ').map(Number)
+const start = +input[1]
 
-for (const row of input) {
-  const [u, v, w] = row.split(' ').map(Number)
-  graph[u].push([v, w])
+const genGraph = (input) => {
+  const graph = Array.from({ length: V + 1 }, () => [])
+  for (let i = 2; i < E + 2; i++) {
+    const [u, v, w] = input[i].split(' ').map(Number)
+    graph[u].push({ to: v, weight: w })
+  }
+  return graph
 }
 
-const dijkstra = (start) => {
+const dijkstra = (graph, start) => {
   const distance = Array.from({ length: V + 1 }, () => Infinity)
   distance[start] = 0
 
@@ -66,12 +69,10 @@ const dijkstra = (start) => {
   minHeap.push({ current: start, dist: 0 })
   while (minHeap.size()) {
     const { current, dist } = minHeap.pop()
-    if (distance[current] < dist) {
-      continue
-    }
+    if (distance[current] < dist) continue
 
     for (const edge of graph[current]) {
-      const [to, weight] = edge
+      const { to, weight } = edge
       const newDist = dist + weight
       if (newDist < distance[to]) {
         distance[to] = newDist
@@ -82,7 +83,9 @@ const dijkstra = (start) => {
   return distance.slice(1)
 }
 
-const result = dijkstra(start)
+const graph = genGraph(input)
+console.log(graph)
+const result = dijkstra(graph, start)
 let answer = ''
 result.forEach((value) => {
   if (value === Infinity) {
