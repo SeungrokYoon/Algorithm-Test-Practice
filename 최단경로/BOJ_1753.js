@@ -37,13 +37,15 @@ class MinHeap {
   }
 
   upHeap(currentIndex = this.heap.length - 1) {
-    let parent = Math.floor((currentIndex - 1) / 2)
-    while (parent >= 0 && this.heap[parent].dist > this.heap[currentIndex].dist) {
-      const temp = this.heap[parent]
-      this.heap[parent] = this.heap[currentIndex]
+    while (
+      Math.floor((currentIndex - 1) / 2) >= 0 &&
+      this.heap[Math.floor((currentIndex - 1) / 2)].dist > this.heap[currentIndex].dist
+    ) {
+      let parentIndex = Math.floor((currentIndex - 1) / 2)
+      const temp = this.heap[parentIndex]
+      this.heap[parentIndex] = this.heap[currentIndex]
       this.heap[currentIndex] = temp
-      currentIndex = parent
-      parent = Math.floor((currentIndex - 1) / 2)
+      currentIndex = parentIndex
     }
   }
 
