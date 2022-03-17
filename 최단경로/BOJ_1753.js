@@ -1,10 +1,42 @@
+const input = require('fs')
+  .readFileSync(__dirname + '/test.txt')
+  .toString()
+  .trim()
+  .split('\n')
+
+const [V, E] = input.shift().split(' ').map(Number)
+const start = +input.shift()
+
+let uvws = input.map((str) => str.split(' ').map(Number))
+
+const genGraph = (uvws) => {
+  const graph = new Map()
+  for (let i = 1; i < V + 1; i++) {
+    graph.set(i, new Map())
+  }
+  uvws.forEach(([start, end, weight]) => {
+    const adjEdges = graph.get(start)
+    if (!adjEdges.has(end)) {
+      adjEdges.set(end, weight)
+      return
+    }
+    if (adjEdges.get(end) > weight) {
+      adjEdges.set(end, weight)
+    }
+  })
+  return graph
+}
 class MinHeap {
   constructor() {
     this.heap = []
   }
+
   push({ current, dist }) {
     this.heap.push({ current, dist })
-    let currentIndex = this.heap.length - 1
+    this.upHeap(this.heap.length - 1)
+  }
+
+  upHeap(currentIndex = this.heap.length - 1) {
     let parent = Math.floor((currentIndex - 1) / 2)
     while (parent >= 0 && this.heap[parent].dist > this.heap[currentIndex].dist) {
       const temp = this.heap[parent]
@@ -14,54 +46,32 @@ class MinHeap {
       parent = Math.floor((currentIndex - 1) / 2)
     }
   }
+
   pop() {
     if (!this.heap.length) return null
     if (this.heap.length === 1) return this.heap.pop()
     const popped = this.heap[0]
     this.heap[0] = this.heap[this.heap.length - 1]
     this.heap.pop()
-    const downHeap = (parentIndex) => {
-      let childIndex = parentIndex * 2 + 1
-      while (childIndex < this.heap.length) {
-        if (
-          childIndex + 1 < this.heap.length &&
-          this.heap[childIndex].dist > this.heap[childIndex + 1].dist
-        )
-          childIndex++
-        if (this.heap[parentIndex].dist <= this.heap[childIndex].dist) break
-        const temp = this.heap[childIndex]
-        this.heap[childIndex] = this.heap[parentIndex]
-        this.heap[parentIndex] = temp
-        parentIndex = childIndex
-      }
-    }
-    downHeap(0)
+    this.downHeap(0)
     return popped
   }
-  size() {
-    return this.heap.length
-  }
-}
 
-const input = require('fs')
-  .readFileSync(__dirname + '/test.txt')
-  .toString()
-  .trim()
-  .split('\n')
-
-const [V, E] = input[0].split(' ').map(Number)
-const start = +input[1]
-
-const genGraph = (input) => {
-  const graph = new Map()
-  for (let i = 1; i < V + 1; i++) {
-    graph[i] = []
+  downHeap(parentIndex) {
+    while (parentIndex * 2 + 1 < this.heap.length) {
+      let childIndex = parentIndex * 2 + 1
+      if (
+        childIndex + 1 < this.heap.length &&
+        this.heap[childIndex].dist > this.heap[childIndex + 1].dist
+      )
+        childIndex++
+      if (this.heap[parentIndex].dist <= this.heap[childIndex].dist) break
+      const temp = this.heap[childIndex]
+      this.heap[childIndex] = this.heap[parentIndex]
+      this.heap[parentIndex] = temp
+      parentIndex = childIndex
+    }
   }
-  for (let i = 2; i < E + 2; i++) {
-    const [u, v, w] = input[i].split(' ').map(Number)
-    graph[u].push({ to: v, weight: w })
-  }
-  return graph
 }
 
 const dijkstra = (graph, start) => {
@@ -70,30 +80,24 @@ const dijkstra = (graph, start) => {
 
   const minHeap = new MinHeap()
   minHeap.push({ current: start, dist: 0 })
-  while (minHeap.size()) {
+  while (minHeap.heap.length) {
     const { current, dist } = minHeap.pop()
     if (distance[current] < dist) continue
-
-    for (const edge of graph[current]) {
-      const { to, weight } = edge
+    if (!graph.get(current)) continue
+    for (const [vertex, weight] of graph.get(current).entries()) {
       const newDist = dist + weight
-      if (newDist < distance[to]) {
-        distance[to] = newDist
-        minHeap.push({ current: to, dist: newDist })
-      }
+      if (newDist >= distance[vertex]) continue
+      distance[vertex] = newDist
+      minHeap.push({ current: vertex, dist: newDist })
     }
   }
-  return distance.slice(1)
+  return distance
 }
 
-const graph = genGraph(input)
+const graph = genGraph(uvws)
 const result = dijkstra(graph, start)
-let answer = ''
-result.forEach((value) => {
-  if (value === Infinity) {
-    answer += 'INF\n'
-  } else {
-    answer += `${value}\n`
-  }
-})
-console.log(answer.trim())
+  .slice(1)
+  .map((el) => (el === Infinity ? 'INF' : el))
+  .join('\n')
+
+console.log(result.trim())
