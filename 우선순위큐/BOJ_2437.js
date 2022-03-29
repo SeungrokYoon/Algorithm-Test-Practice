@@ -15,8 +15,8 @@ for (let i = 0; i < arr.length; i++) {
     memo.last = memo.last + currentNum
     continue
   }
-  answer = memo.last + 1
   break
 }
+answer = memo.last + 1
 
 console.log(answer)
