@@ -1,5 +1,5 @@
 const [[N], [...arr]] = require('fs')
-  .readFileSync(__dirname + '/test.txt')
+  .readFileSync('/dev/stdin')
   .toString()
   .trim()
   .split('\n')
@@ -11,7 +11,7 @@ let answer = 0
 const memo = { first: 0, last: 0 }
 for (let i = 0; i < arr.length; i++) {
   const currentNum = arr[i]
-  if (memo.first + currentNum <= memo.last + 1) {
+  if (currentNum <= memo.last + 1) {
     memo.last = memo.last + currentNum
     continue
   }
