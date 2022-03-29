@@ -1,5 +1,5 @@
 const [[N, M], [r, c, d], ...graph] = require('fs')
-  .readFileSync(__dirname + '/test.txt')
+  .readFileSync('/dev/stdin')
   .toString()
   .trim()
   .split('\n')
@@ -10,8 +10,6 @@ const directionMap = { 0: [-1, 0], 1: [0, 1], 2: [1, 0], 3: [0, -1] }
 const cleanSpot = (row, col, direction) => {
   graph[row][col] = '-'
   answer++
-  console.log('cleaned', row, col, direction)
-  console.log(graph.join('\n'))
   findNextSpot(row, col, direction)
 }
 
@@ -34,8 +32,8 @@ const findNextSpot = (row, col, d) => {
     let [leftSpotRow, leftSpotCol] = [row + dRowLeft, col + dColLeft]
     cleanSpot(leftSpotRow, leftSpotCol, leftDirection)
   } else {
-    const [backRow, backCol] = row + [dRow * -1, col + dCol * -1]
-    if (isValid(backRow, backCol) && graph[backRow][backCol] === 1) return
+    const [backRow, backCol] = [row + dRow * -1, col + dCol * -1]
+    if (graph[backRow][backCol] === 1) return
     findNextSpot(backRow, backCol, d)
   }
 }
