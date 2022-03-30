@@ -5,33 +5,69 @@ const [[N], ...arr] = require('fs')
   .split('\n')
   .map((s) => s.split(' ').map(Number))
 
-const sortArr = (arr, mapper) => {
-  const data = []
-  arr.forEach((row) => {
-    data.push([...row])
-  })
-  data.sort(mapper)
-  return data
+class MinHeap {
+  constructor() {
+    this.heap = []
+  }
+  insert(value) {
+    this.heap.push(value)
+    this.upheap()
+  }
+  upheap(childIndex = this.heap.length - 1) {
+    while (Math.floor((childIndex - 1) / 2) >= 0) {
+      const parentIndex = Math.floor((childIndex - 1) / 2)
+      if (this.heap[parentIndex] < this.heap[childIndex]) break
+      const temp = this.heap[parentIndex]
+      this.heap[parentIndex] = this.heap[childIndex]
+      this.heap[childIndex] = temp
+      childIndex = parentIndex
+    }
+  }
+  pop() {
+    if (this.heap.length === 0) return null
+    const root = this.heap[0]
+    this.heap[0] = this.heap[this.heap.length - 1]
+    this.heap.pop()
+    if (this.heap.length === 1) {
+      return root
+    }
+    this.downheap()
+  }
+  downheap(parentIndex = 0) {
+    while (2 * parentIndex + 1 < this.heap.length) {
+      let childIndex = 2 * parentIndex + 1
+      if (childIndex + 1 < this.heap.length && this.heap[childIndex] > this.heap[childIndex + 1])
+        childIndex++
+      if (this.heap[parentIndex] < this.heap[childIndex]) break
+      const temp = this.heap[parentIndex]
+      this.heap[parentIndex] = this.heap[childIndex]
+      this.heap[childIndex] = temp
+      parentIndex = childIndex
+    }
+  }
+  top() {
+    return this.heap[0]
+  }
+  size() {
+    return this.heap.length
+  }
 }
 
-let startedIndex = 0
-let endedIndex = 0
+const lectures = arr.sort((a, b) => a[0] - b[0])
 
-const startLectures = sortArr(arr, (a, b) => a[0] - b[0])
-const endLectures = sortArr(arr, (a, b) => a[1] - b[1])
-
-let max = 0
-let currentClassrooms = 0
-for (let i = 0; i < endLectures[endLectures.length - 1][1]; i++) {
-  if (startedIndex < N && startLectures[startedIndex][0] === i) {
-    currentClassrooms++
-    startedIndex++
+let maxClassCount = 0
+let classCount = 1
+const minHeap = new MinHeap()
+minHeap.insert(lectures[0][1])
+for (let i = 1; i < lectures.length; i++) {
+  const [startTime, endTime] = lectures[i]
+  while (startTime >= minHeap.top()) {
+    minHeap.pop()
+    classCount--
   }
-  if (endedIndex < N && endLectures[endedIndex][1] === i) {
-    currentClassrooms--
-    endedIndex++
-  }
-  max = Math.max(currentClassrooms, max)
+  minHeap.insert(endTime)
+  classCount++
+  maxClassCount = Math.max(maxClassCount, classCount)
 }
 
-console.log(max)
+console.log(maxClassCount)
