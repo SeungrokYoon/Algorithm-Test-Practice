@@ -1,5 +1,5 @@
 const input = require('fs')
-  .readFileSync(__dirname + '/test.txt')
+  .readFileSync('/dev/stdin')
   .toString()
   .trim()
   .split('\n')
@@ -44,14 +44,14 @@ class Dice {
         this.dice[3][1] = newHorizontal[3]
         break
       case 3:
-        newVertical = [originalVertical[3]].concat(originalVertical.slice(0, 3))
-        for (let row = 0; row < 3; row++) {
+        newVertical = originalVertical.slice(1)
+        newVertical.push(originalVertical[0])
+        for (let row = 0; row < 4; row++) {
           this.dice[row][1] = newVertical[row]
         }
         break
       default:
-        newVertical = originalVertical.slice(1)
-        newVertical.push(originalVertical[0])
+        newVertical = [originalVertical[3]].concat(originalVertical.slice(0, 3))
         for (let row = 0; row < 4; row++) {
           this.dice[row][1] = newVertical[row]
         }
@@ -65,6 +65,10 @@ class Dice {
   }
   setBottom(newValue) {
     this.dice[3][1] = newValue
+  }
+  print() {
+    console.log('--dice--')
+    console.log(this.dice.join('\n'))
   }
 }
 
