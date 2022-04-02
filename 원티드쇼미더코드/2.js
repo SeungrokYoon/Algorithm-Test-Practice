@@ -3,13 +3,12 @@ const input = require('fs')
   .toString()
   .trim()
   .split('\n')
-  .map((s) => s.split(' '))
+  .map((s) => s.split(' ').map(Number))
 
-const [N, Q] = input[0].map(Number)
-const houses = Array.from({ length: N + 1 }, (_, i) => i)
+const [N, Q] = input[0]
 const houseNumbers = ['0'].concat(input[1])
-const roadInfos = input.slice(2, N + 1).map((road) => road.map(Number))
-const plays = input.slice(N + 1).map((play) => play.map(Number))
+const roadInfos = input.slice(2, N + 1)
+const plays = input.slice(N + 1)
 const adjList = Array.from({ length: N + 1 }, () => [])
 for (const [from, to] of roadInfos) {
   adjList[from].push(to)
@@ -29,13 +28,13 @@ const solution = () => {
       const strSofar = stack.pop()
       const poppedNodeNumber = stack.pop()
       if (poppedNodeNumber === end) {
-        answer += `${strSofar}\n`
+        answer += `${BigInt(strSofar) % 1000000007n}\n`
         break
       }
       for (const node of adjList[poppedNodeNumber]) {
         if (visited[node]) continue
         stack.push(node)
-        stack.push((parseInt(strSofar + houseNumbers[node]) % 1000000007) + '')
+        stack.push(`${strSofar}${houseNumbers[node]}`)
         visited[node] = true
       }
     }
@@ -44,4 +43,4 @@ const solution = () => {
 }
 
 const result = solution()
-console.log(result)
+console.log(result.trim())
