@@ -16,19 +16,6 @@ for (let i = 1; i <= N; i++) {
   index = index + input[index] * 1 + 1
 }
 
-const getPermutations = function (arr, selectNumber) {
-  const results = []
-  if (selectNumber === 1) return arr.map((value) => [value])
-
-  arr.forEach((fixed, index, origin) => {
-    const rest = [...origin.slice(0, index), ...origin.slice(index + 1)]
-    const permutations = getPermutations(rest, selectNumber - 1)
-    const attached = permutations.map((permutation) => [fixed, ...permutation])
-    results.push(...attached)
-  })
-
-  return results
-}
 const deepCopy = (arr) => {
   const temp = []
   arr.forEach((v) => {
@@ -37,26 +24,27 @@ const deepCopy = (arr) => {
   return temp
 }
 
-const solution = () => {
-  //순열짜놓고 조합 내에서 계산하기
-  const arr = Array.from({ length: N }, (_, i) => i + 1)
-  const results = getPermutations(arr, N)
-  for (const result of results) {
-    let tempSum = 0
-    const copiedPotions = deepCopy(potions)
-    for (const currentChoice of result) {
-      //구매
-      tempSum += copiedPotions[currentChoice]
-      //할인 적용
-      for (const discount of discounts[currentChoice]) {
-        const [target, amount] = discount
-        copiedPotions[target] =
-          copiedPotions[target] - amount <= 0 ? 1 : copiedPotions[target] - amount
-      }
-    }
+const visited = Array.from({ length: N + 1 }, () => 0)
+const dfs = (arr, costs, depth, tempSum) => {
+  if (depth === N) {
     minTotal = Math.min(minTotal, tempSum)
+    return
+  }
+  for (let i = 1; i <= N; i++) {
+    if (visited[i]) continue
+    visited[i] = 1
+    //구매
+    const copiedPotions = deepCopy(costs)
+    for (const discount of discounts[i]) {
+      const [target, amount] = discount
+      copiedPotions[target] =
+        copiedPotions[target] - amount <= 0 ? 1 : copiedPotions[target] - amount
+    }
+    dfs(arr, copiedPotions, depth + 1, tempSum + copiedPotions[i])
+    visited[i] = 0
   }
 }
 
-solution()
+const arr = Array.from({ length: N }, (_, i) => i + 1)
+dfs(arr, potions, 0, 0)
 console.log(minTotal)
