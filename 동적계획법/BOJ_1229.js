@@ -10,7 +10,7 @@ const generateHexaNum = (sizeOfEdge, hList) => {
 }
 //N 전까지의 육각수 h_n먼저 구하기
 const hList = [0, 1, 6]
-const dp = Array.from({ length: N + 1 }, () => 0)
+const dp = Array.from({ length: N + 1 }, () => 1000000)
 let isStop = false
 let hEdge = 3
 while (!isStop) {
@@ -39,8 +39,9 @@ for (let n = 2; n <= N; n++) {
   while (copiedNum < hList[pointer]) {
     pointer--
   }
-
-  dp[n] = dp[n - hList[pointer]] + 1
+  for (let i = 0; i < pointer + 1; i++) {
+    dp[n] = Math.min(dp[n - hList[i]] + 1, dp[n])
+  }
 }
-console.log(dp)
+
 console.log(dp[N])
