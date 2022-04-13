@@ -33,19 +33,14 @@ hList.shift()
 
 //dp를 채워넣자.
 for (let n = 2; n <= N; n++) {
-  let original = n
-  let counter = 0
+  let copiedNum = n
   let pointer = hList.length - 1
-  while (original >= 0 && pointer >= 0) {
-    //12
-    while (original < hList[pointer]) {
-      pointer--
-    }
-    original -= hList[pointer]
-    if (original >= 0) {
-      counter++
-    }
+  //가장 큰 육각수 찾기
+  while (copiedNum < hList[pointer]) {
+    pointer--
   }
-  dp[n] = counter
+
+  dp[n] = dp[n - hList[pointer]] + 1
 }
+console.log(dp)
 console.log(dp[N])
