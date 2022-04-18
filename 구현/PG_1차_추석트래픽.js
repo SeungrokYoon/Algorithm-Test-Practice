@@ -4,6 +4,7 @@ function solution(lines) {
   const startLogs = []
   const endLogs = []
   const logs = []
+  //millisecond로 변환 후 정렬
   lines.forEach((line) => {
     const [_, endTime, duration] = line.split(' ')
     const [hour, minute, second] = endTime.split(':').map(Number)
@@ -17,26 +18,36 @@ function solution(lines) {
   startLogs.sort((a, b) => a - b)
   endLogs.sort((a, b) => a - b)
   logs.sort((a, b) => a.start - b.start)
+  //시작시간과 종료시간 기준으로 탐색 시작
   for (let i = 0; i < startLogs.length; i++) {
     //시작시간 기준 이후 1초 탐색
-    const startT = startLogs[i]
-    const endT = startT + 1000 - 1
+    const leftWindow = startLogs[i]
+    const rightWindow = leftWindow + 1000 - 1
     for (let j = 0; j < startLogs.length; j++) {
       const { start, end } = logs[j]
-      if (start > endT) break
-      if ((start >= startT && start <= endT) || (end >= startT && end <= endT)) counter++
+      if (start > rightWindow) break
+      if (
+        (start >= leftWindow && start <= rightWindow) ||
+        (end >= leftWindow && end <= rightWindow)
+      )
+        counter++
     }
     answer = Math.max(counter, answer)
     counter = 0
   }
   for (let i = 0; i < endLogs.length; i++) {
     //종료시간 기준 이후 1초 탐색
-    const startT = endLogs[i]
-    const endT = startT + 1000 - 1
+    const leftWindow = endLogs[i]
+    const rightWindow = leftWindow + 1000 - 1
     for (let j = 0; j < endLogs.length; j++) {
       const { start, end } = logs[j]
-      if (start > endT) break
-      if ((start >= startT && start <= endT) || (end >= startT && end <= endT)) counter++
+      console.log('left, right', leftWindow, rightWindow, 'start,end', start, end)
+      if (start > rightWindow) break
+      if (
+        (start >= leftWindow && start <= rightWindow) ||
+        (end >= leftWindow && end <= rightWindow)
+      )
+        counter++
     }
     answer = Math.max(counter, answer)
     counter = 0
@@ -44,19 +55,4 @@ function solution(lines) {
   return answer
 }
 
-console.log(solution(['2016-09-15 01:00:04.001 2.0s', '2016-09-15 01:00:07.000 2s']))
-
-console.log(
-  solution([
-    '2016-09-15 20:59:57.421 0.351s',
-    '2016-09-15 20:59:58.233 1.181s',
-    '2016-09-15 20:59:58.299 0.8s',
-    '2016-09-15 20:59:58.688 1.041s',
-    '2016-09-15 20:59:59.591 1.412s',
-    '2016-09-15 21:00:00.464 1.466s',
-    '2016-09-15 21:00:00.741 1.581s',
-    '2016-09-15 21:00:00.748 2.31s',
-    '2016-09-15 21:00:00.966 0.381s',
-    '2016-09-15 21:00:02.066 2.62s',
-  ]),
-)
+console.log(solution(['2016-09-15 01:00:04.002 2.0s', '2016-09-15 01:00:07.000 2s']))
