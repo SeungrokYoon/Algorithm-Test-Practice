@@ -1,38 +1,42 @@
 function solution(gems) {
-  var answer = []
-  const gemMap = {}
-  const gemSet = new Set()
-  gems = [''].concat(gems)
-
-  let discoveredCombi = { start: gems.length, end: gems.length, gemCount: 0 }
-  for (let i = 1; i < gems.length; i++) {
-    const gem = gems[i]
-    //만약에 새로운 보석의 등장이라면 무조건 갱신해줘야함
-    const isNewGem = !gemSet.has(gem)
-    gemMap[gem] = i
-    const temp = []
-    Object.keys(gemMap).forEach((gem) => {
-      temp.push(gemMap[gem])
-    })
-    temp.sort((a, b) => a - b)
-    const tempDiscoveredCombi = {
-      start: temp[0],
-      end: temp[temp.length - 1],
-      gemCount: discoveredCombi.gemCount,
-    }
-    if (isNewGem) {
-      gemSet.add(gem)
-      tempDiscoveredCombi.gemCount++
-      discoveredCombi = tempDiscoveredCombi
+  const gemMap = new Map()
+  const gemSet = new Set(gems)
+  gemMap.set(gems[0], 1)
+  //start이상부터 end 이하까지 볼 거임
+  //투포인터의 개념을 사용하여 O(n)유지하기 O(n^2)은 시간초과가 나옴
+  let start = 0,
+    end = 1,
+    minSize = gems.length + 1,
+    minStart = gems.length + 1,
+    minEnd = gems.length + 1
+  while (start < end) {
+    if (gemMap.size !== gemSet.size && end < gems.length) {
+      const index = end
+      const gem = gems[index]
+      const count = gemMap.has(gem) ? gemMap.get(gem) + 1 : 1
+      gemMap.set(gem, count)
+      end++
     } else {
-      //새로운 보석은 아님
-      discoveredCombi =
-        discoveredCombi.end - discoveredCombi.start >
-        tempDiscoveredCombi.end - tempDiscoveredCombi.start
-          ? tempDiscoveredCombi
-          : discoveredCombi
+      if (gemMap.size === gemSet.size) {
+        if (minSize > end - start - 1) {
+          //-1해주는 이유는 start가 0부터 시작하니까 인덱스를 맞춰주기 위해서
+          //최소값이 갱신 가능하다면
+          minSize = end - start - 1
+          minStart = start + 1 //start는 0부터 시작하니까 인덱스를 맞춰주려고
+          minEnd = end
+        }
+      }
+      const gem = gems[start]
+      if (gemMap.has(gem)) {
+        if (gemMap.get(gem) === 1) {
+          gemMap.delete(gem)
+        } else {
+          gemMap.set(gem, gemMap.get(gem) - 1)
+        }
+      }
+
+      start++
     }
   }
-  answer = [discoveredCombi.start, discoveredCombi.end]
-  return answer
+  return [minStart, minEnd]
 }
