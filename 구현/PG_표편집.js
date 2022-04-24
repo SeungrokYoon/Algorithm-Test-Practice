@@ -1,3 +1,59 @@
+class Node {
+  constructor(value) {
+    this.value = value
+    this.previous = null
+    this.next = null
+  }
+}
+
+class LinkedList {
+  constructor(n, k) {
+    this.currentNode = null
+    this.head = null
+    this.tail = null
+    this.deletedNodes = []
+    this.generateLinkedNodes(n, k)
+  }
+  generateLinkedNodes(n, k) {
+    for (let i = 0; i < n; i++) {
+      const node = new Node(n)
+      if (this.tail === null) {
+        //첫 번째 노드
+        this.head = node
+      }
+      if (k === i) this.currentNode = node
+      this.tail.next = node
+      node.previous = this.tail
+      this.tail = node
+    }
+  }
+  recoverDeletedNode(node) {
+    const recoveredNode = this.deletedNodes.pop()
+    const prevNode = recoveredNode.previous
+    const nextNode = recoveredNode.next
+    prevNode.next = recoveredNode
+    if (nextNode !== null) nextNode.prevNode = recoveredNode
+  }
+  deleteCurrentNode(value) {
+    const previousNode = this.currentNode.previous
+    const nextNode = this.currentNode.next
+    previousNode.next = nextNode
+    nextNode.previous = previousNode
+    this.deletedNodes.push(this.currentNode)
+    this.currentNode = nextNode !== null ? nextNode : previousNode
+  }
+  moveDown(num) {
+    for (let i = 0; i < num; i++) {
+      this.currentNode = this.currentNode.previous
+    }
+  }
+  moveUp(num) {
+    for (let i = 0; i < num; i++) {
+      this.currentNode = this.currentNode.next
+    }
+  }
+}
+
 const binarySearch = (arr, key) => {
   let start = 0
   let end = arr.length - 1
@@ -14,91 +70,24 @@ const binarySearch = (arr, key) => {
 
 function solution(n, k, cmd) {
   var answer = ''
-  const totalDeletedStack = []
-  //오름차순정렬
-  let sortedDeletedStack = []
-  let selectedIndex = k
-  let lastIndex = n - 1
-  const arr = Array.from({ length: n }, () => 'O')
+  const linkedList = new LinkedList(n, k)
+  console.log(linkedList)
   for (const command of cmd) {
     const commandType = command[0]
     if (commandType === 'U') {
       const move = Number(command.split(' ')[1])
-      let nextIndex = selectedIndex + move
-      let isPossible = false
-      //binarySearch 로 못 찾으면 놓을 수 있는 위치
-      //있으면 nextIndex++해서 찾기
-      while (!isPossible) {
-        const result = binarySearch(sortedDeletedStack, nextIndex)
-        if (result < 0) {
-          selectedIndex = nextIndex
-          isPossible = true
-        } else {
-          nextIndex++
-        }
-      }
+      linkedList.moveUp(move)
     } else if (commandType === 'D') {
       const move = Number(command.split(' ')[1])
-      let nextIndex = selectedIndex - move
-      let isPossible = false
-      //binarySearch 로 못 찾으면 놓을 수 있는 위치
-      //있으면 nextIndex--해서 찾기
-      while (!isPossible) {
-        const result = binarySearch(sortedDeletedStack, nextIndex)
-        if (result < 0) {
-          selectedIndex = nextIndex
-          isPossible = true
-        } else {
-          nextIndex--
-        }
-      }
+      linkedList.moveDown(move)
     } else if (commandType === 'C') {
-      arr[selectedIndex] = 'X'
-      let isPossible = false
-      let isLastNumIndex = selectedIndex === lastIndex
-      if (isLastNumIndex) {
-        let nextIndex = selectedIndex - 1
-        while (!isPossible) {
-          const result = binarySearch(sortedDeletedStack, nextIndex)
-          if (result < 0) {
-            selectedIndex = nextIndex
-            isPossible = true
-          } else {
-            nextIndex--
-          }
-        }
-        lastIndex = selectedIndex
-      } else {
-        let nextIndex = selectedIndex + 1
-        while (!isPossible) {
-          const result = binarySearch(sortedDeletedStack, nextIndex)
-          if (result < 0) {
-            selectedIndex = nextIndex
-            isPossible = true
-          } else {
-            nextIndex++
-          }
-        }
-      }
-      //삭제배열에 추가
-      totalDeletedStack.push(selectedIndex)
-      sortedDeletedStack.push(selectedIndex)
-      sortedDeletedStack.sort((a, b) => a - b)
+      linkedList.deleteCurrentNode()
     } else {
       //Z
-      const recover = totalDeletedStack.pop()
-      arr[recover] = 'O'
-      //힙에서 제거
-      sortedDeletedStack = [...totalDeletedStack].sort((a, b) => a - b)
-      const i = binarySearch(sortedDeletedStack, recover)
-      sortedDeletedStack = [
-        ...sortedDeletedStack.slice(0, i),
-        ...sortedDeletedStack.slice(i + 1, sortedDeletedStack.length),
-      ]
+      linkedList.recoverDeletedNode()
     }
-    console.log(command, arr.join(''))
   } //for
-  answer = arr.join('')
   return answer
 } //solution
+
 console.log(solution(8, 2, ['D 2', 'C', 'U 3', 'C', 'D 4', 'C', 'U 2', 'Z', 'Z']))
