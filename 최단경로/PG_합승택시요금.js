@@ -13,7 +13,7 @@ function solution(n, s, a, b, fares) {
 
   for (let e = 1; e < n + 1; e++) {
     for (let start = 1; start < n + 1; start++) {
-      for (let end = 1; end < n + 1; end++) {
+      for (let end = start + 1; end < n + 1; end++) {
         if (e === start || start === end || e === end) continue
         const newNum = Math.min(primTable[start][end], primTable[start][e] + primTable[e][end])
         primTable[start][end] = newNum
