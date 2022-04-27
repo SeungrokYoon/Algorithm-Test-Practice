@@ -1,62 +1,71 @@
-function solution(board) {
-  const N = board.length
-  var answer = 600 * N * N
-  //dfs 완전탐색같은데?//백트랙킹
-  //직선거리는 최단거리이고, 직선거리비용은 최단거리 *100
-  //다음 nx,ny가 직각인지를 판단하고, 직각이면 거리+=500
-  const direction = { 2: 'toRight', 1: 'toDown', '-2': 'toLeft', '-1': 'toUp' }
-  const dx = [0, 1, 0, -1]
-  const dy = [1, 0, -1, 0]
-  const stack = [
-    { x: 0, y: 1, cost: 100, latestDirection: 2 },
-    { x: 1, y: 0, cost: 100, latestDirection: 1 },
-  ]
-  const dfs = (board, cost, latestDirection) => {}
+const printBoard = (board) => {
+  let boardStr = ''
+  board.forEach((row) => (boardStr += row.join('') + '\n'))
+  console.log(boardStr)
+}
 
-  board[0][0] = 1
-  board[0][1] = 1
-  board[1][0] = 1
-  const routes = []
-  while (stack.length) {
-    const { x, y, cost, latestDirection } = stack.pop()
+function solution(board) {
+  //재귀 dfs와 백트랙킹
+  const N = board.length
+  let answer = 600 * N * N
+  const dfs = ({ startX, startY }, board, cost, { prevX, prevY }, routes) => {
+    //dfs탐색좌표, 보드, 탐색좌표까지의 비용, 이전 좌표, 누적좌표
+    if (startX === N - 1 && startY === N - 1) {
+      // if (answer > cost) console.log(routes, cost)
+      answer = Math.min(answer, cost)
+      return
+    }
+    const dx = [0, 1, 0, -1]
+    const dy = [1, 0, -1, 0]
     for (let i = 0; i < 4; i++) {
-      const nx = x + dx[i]
-      const ny = y + dy[i]
-      if (nx < 0 || nx >= N || ny < 0 || ny >= N || board[nx][ny] === 1) continue
-      const newDirection = dx[i] + dy[i] * 2
-      if (newDirection === latestDirection) {
-        board[nx][ny] = 1
-        if (nx === N - 1 && ny === N - 1) {
-          answer = Math.min(answer, cost + 100)
-          console.log('found!', routes)
-          routes.pop()
-        }
-        stack.push({ x: nx, y: ny, cost: cost + 100, latestDirection: latestDirection })
-        routes.push({ x: nx, y: ny, cost: cost + 100, latestDirection: latestDirection })
-      } else {
-        board[nx][ny] = 1
-        if (nx === N - 1 && ny === N - 1) {
-          answer = Math.min(answer, cost + 600)
-          console.log('found!', routes)
-          routes.pop()
-        }
-        stack.push({ x: nx, y: ny, cost: cost + 600, latestDirection: newDirection })
-        routes.push({ x: nx, y: ny, cost: cost + 600, latestDirection: newDirection })
-      }
+      const nx = startX + dx[i]
+      const ny = startY + dy[i]
+      if (nx < 0 || nx >= N || ny < 0 || ny >= N) continue
+      if (board[nx][ny] === 1) continue
+      const isSameDirection = startX - prevX === dx[i] && startY - prevY === dy[i]
+      const deltaCost = isSameDirection ? 100 : 600
+      board[nx][ny] = 1
+      // printBoard(board)
+      dfs({ startX: nx, startY: ny }, board, cost + deltaCost, { prevX: startX, prevY: startY }, [
+        ...routes,
+        [nx, ny],
+      ])
+      board[nx][ny] = 0
     }
   }
 
+  board[0][0] = 1
+
+  //오른쪽으로 이동 후, dfs
+  board[0][1] = 1
+  dfs({ startX: 0, startY: 1 }, board, 100, { prevX: 0, prevY: 0 }, [
+    [0, 0],
+    [0, 1],
+  ])
+  board[0][1] = 0
+
+  //아래쪽으로 이동 후,dfs
+  board[1][0] = 1
+  dfs({ startX: 1, startY: 0 }, board, 100, { prevX: 0, prevY: 0 }, [
+    [0, 0],
+    [1, 0],
+  ])
+  board[1][0] = 0
   return answer
 }
 
-//test 4
+// console.log(
+//   solution([
+//     [0, 0, 1],
+//     [0, 0, 1],
+//     [0, 0, 0],
+//   ]),
+// )
 console.log(
   solution([
-    [0, 0, 0, 0, 0, 0],
-    [0, 1, 1, 1, 1, 0],
-    [0, 0, 1, 0, 0, 0],
-    [1, 0, 0, 1, 0, 1],
-    [0, 1, 0, 0, 0, 1],
-    [0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1],
+    [1, 0, 0, 1],
+    [0, 0, 0, 1],
+    [0, 0, 0, 0],
   ]),
 )
