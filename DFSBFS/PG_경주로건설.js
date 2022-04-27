@@ -9,6 +9,7 @@ function solution(board) {
   const N = board.length
   let answer = 600 * N * N
   const dfs = ({ startX, startY }, board, cost, { prevX, prevY }, routes) => {
+    printBoard(board)
     //dfs탐색좌표, 보드, 탐색좌표까지의 비용, 이전 좌표, 누적좌표
     if (startX === N - 1 && startY === N - 1) {
       // if (answer > cost) console.log(routes, cost)
@@ -37,23 +38,26 @@ function solution(board) {
   board[0][0] = 1
 
   //오른쪽으로 이동 후, dfs
-  board[0][1] = 1
-  dfs({ startX: 0, startY: 1 }, board, 100, { prevX: 0, prevY: 0 }, [
-    [0, 0],
-    [0, 1],
-  ])
-  board[0][1] = 0
+  if (board[0][1] === 0) {
+    board[0][1] = 1
+    dfs({ startX: 0, startY: 1 }, board, 100, { prevX: 0, prevY: 0 }, [
+      [0, 0],
+      [0, 1],
+    ])
+    board[0][1] = 0
+  }
 
   //아래쪽으로 이동 후,dfs
-  board[1][0] = 1
-  dfs({ startX: 1, startY: 0 }, board, 100, { prevX: 0, prevY: 0 }, [
-    [0, 0],
-    [1, 0],
-  ])
-  board[1][0] = 0
+  if (board[1][0] === 0) {
+    board[1][0] = 1
+    dfs({ startX: 1, startY: 0 }, board, 100, { prevX: 0, prevY: 0 }, [
+      [0, 0],
+      [1, 0],
+    ])
+    board[1][0] = 0
+  }
   return answer
 }
-
 // console.log(
 //   solution([
 //     [0, 0, 1],
