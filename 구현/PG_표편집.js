@@ -1,121 +1,59 @@
-class Node {
-  constructor(value) {
-    this.value = value
-    this.previous = null
-    this.next = null
-  }
-}
-
-class LinkedList {
-  constructor(n, k) {
-    this.currentNode = null
-    this.head = null
-    this.tail = null
-    this.deletedNodes = []
-    this.generateLinkedNodes(n, k)
-  }
-  generateLinkedNodes(n, k) {
-    for (let i = 0; i < n; i++) {
-      const node = new Node(i)
-      if (k === i) {
-        this.currentNode = node
-      }
-      if (this.head === null) {
-        //첫 번째 노드
-        this.head = node
-        this.tail = node
-        continue
-      }
-      this.tail.next = node
-      node.previous = this.tail
-      this.tail = node
-    }
-  }
-  recoverDeletedNode() {
-    const recoveredNode = this.deletedNodes.pop()
-    //prevNode, nextNode도 리스트에서 삭제된 친구들일 수도 있다.링크드 리스트는 그래도 괜춘
-    //0,1,(2),(3),(4),5,6,7 이고, 4,3,2순서로 삭제되었을 때를 생각해보면
-    //[4{prev:3,next:5},3{prev:2,next:5},2{prev:1,next:5}]
-    const prevNode = recoveredNode.previous
-    const nextNode = recoveredNode.next
-    //head, tail, currentNode에 대한 갱신해야함
-    if (prevNode) prevNode.next = recoveredNode
-    if (nextNode) nextNode.previous = recoveredNode
-    if (prevNode === this.tail) {
-      this.tail = recoveredNode
-    }
-    if (nextNode === this.head) {
-      this.head = recoveredNode
-    }
-  }
-  deleteCurrentNode() {
-    this.deletedNodes.push(this.currentNode)
-    if (this.currentNode === this.head) {
-      this.head = this.currentNode.next
-      this.head.previous = null
-      this.currentNode = this.head
-    } else if (this.currentNode === this.tail) {
-      this.tail = this.currentNode.previous
-      this.tail.next = null
-      this.currentNode = this.tail
-    } else {
-      const previousNode = this.currentNode.previous
-      const nextNode = this.currentNode.next
-      previousNode.next = nextNode
-      nextNode.previous = previousNode
-      this.currentNode = nextNode
-    }
-  }
-  moveUp(num) {
-    for (let i = 0; i < num; i++) {
-      this.currentNode = this.currentNode.previous
-    }
-  }
-  moveDown(num) {
-    for (let i = 0; i < num; i++) {
-      this.currentNode = this.currentNode.next
-    }
-  }
-  printList() {
-    let result = ''
-    let cNode = this.head
-    while (cNode !== null) {
-      result += cNode.value + ' '
-      cNode = cNode.next
-    }
-    console.log(result)
-  }
-  display(n) {
-    const table = new Array(n).fill('X')
-    let result = ''
-    let cNode = this.head
-    while (cNode !== null) {
-      table[cNode.value] = 'O'
-      cNode = cNode.next
-    }
-    result = table.join('')
-    return result
-  }
-}
-
 function solution(n, k, cmd) {
   var answer = ''
-  const linkedList = new LinkedList(n, k)
+  const checkList = new Array(n).fill('O')
+  const linkedList = {}
+  const LEFTEND = -1
+  const RIGHTEND = n
+  for (let i = 0; i < n; i++) {
+    linkedList[i] = { prev: i - 1, next: i + 1 }
+  }
+  const deleted = []
   for (const command of cmd) {
     const commandType = command[0]
     if (commandType === 'U') {
       const move = Number(command.split(' ')[1])
-      linkedList.moveUp(move)
+      for (let i = 0; i < move; i++) {
+        k = linkedList[k].prev
+      }
     } else if (commandType === 'D') {
       const move = Number(command.split(' ')[1])
-      linkedList.moveDown(move)
+      for (let i = 0; i < move; i++) {
+        k = linkedList[k].next
+      }
     } else if (commandType === 'C') {
-      linkedList.deleteCurrentNode()
+      const { prev, next } = linkedList[k]
+      deleted.push({ prev, next, now: k })
+      checkList[k] = 'X'
+      if (next === RIGHTEND) {
+        k = linkedList[k].prev
+      } else {
+        k = linkedList[k].next
+      }
+      if (prev === LEFTEND) {
+        //선택된 행이 맨 위의 행임
+        linkedList[next].prev = prev
+      } else if (next === RIGHTEND) {
+        //선택된 행이 맨 아래 행임
+        linkedList[prev].next = next
+      } else {
+        linkedList[prev].next = next
+        linkedList[next].prev = prev
+      }
     } else {
-      linkedList.recoverDeletedNode()
+      const { prev, next, now } = deleted.pop()
+      checkList[now] = 'O'
+      if (prev === LEFTEND) {
+        linkedList[next].prev = now
+      } else if (next === RIGHTEND) {
+        linkedList[prev].next = now
+      } else {
+        linkedList[prev].next = now
+        linkedList[next].prev = now
+      }
     }
-    linkedList.display()
   } //for
-  answer = linkedList.display(n)
+  answer = checkList.join('')
   return answer
 } //solution
+
+console.log(solution(8, 2, ['D 2', 'C', 'U 3', 'C', 'D 4', 'C', 'U 2', 'Z', 'Z']))
