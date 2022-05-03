@@ -1,19 +1,19 @@
 function solution(m, musicinfos) {
   var answer = ''
   const results = []
-  const mList = m.match(/[A-Z]\#*/g)
+  const mList = m.match(/[A-Z]#*/g)
   musicinfos.forEach((info) => {
     const [sTime, eTime, title, melody] = info.split(',')
     const [sH, sM] = sTime.split(':').map(Number)
     const [eH, eM] = eTime.split(':').map(Number)
     const duration = eH * 60 + eM * 1 - (sH * 60 + sM * 1)
-    const melodyList = melody.match(/[A-Z]\#*/g)
+    const melodyList = melody.match(/[A-Z]#*/g)
 
     let temp = []
-
     while (temp.length < duration) {
       temp = temp.concat(melodyList)
     }
+    temp = temp.slice(0, duration)
     //temp가 mList를 을포함하는지 찾기.
     let isMatch = false
     for (let i = 0; i < temp.length; i++) {
