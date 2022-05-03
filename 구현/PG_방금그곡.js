@@ -35,6 +35,10 @@ function solution(m, musicinfos) {
   })
   results.sort((a, b) => b[0] - a[0])
   const answers = results.filter((e) => e[0] === results[0][0]).map((e) => e[1])
+  if (answers.length === 0) {
+    return '(None)'
+  }
   answer = answers[0]
+
   return answer
 }
