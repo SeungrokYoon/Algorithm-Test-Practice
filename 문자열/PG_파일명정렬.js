@@ -12,7 +12,7 @@ function solution(files) {
 
 const parser = (fileName) => {
   let parsed = ''
-  const [name, extension] = fileName.replace(/\s/g, '').split('.')
+  const [name, extension] = fileName.split('.')
   //head number tail
   const [head, number, tail] = name.match(/^[a-zA-Z-\s]+|[0-9]{1,5}|[\w|0-9]*$/g)
   return { head: head.toLowerCase(), number: Number(number), tail, originalFileName: fileName }
