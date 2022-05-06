@@ -1,14 +1,12 @@
-const combinationDFS = (visited, index, depth, search, result, pool) => {
-  if (depth === search) {
-    result.push([...visited])
+const binaryDFS = (index, n, result, pool) => {
+  if (index === n) {
+    result.push([...pool])
     return
   }
-  for (let i = index; i < visited.length; i++) {
-    if (visited[i]) continue
-    visited[i] = 1
-    combinationDFS(visited, i + 1, depth + 1, search, result, pool)
-    visited[i] = 0
-  }
+  //선택하고
+  binaryDFS(index + 1, n, result, [...pool, 1])
+  //선택하지않고
+  binaryDFS(index + 1, n, result, [...pool, 0])
 }
 
 function solution(n, info) {
@@ -16,10 +14,7 @@ function solution(n, info) {
   const totalScore = info.reduce((acc, curr, i) => acc + (curr > 0 ? 10 - i : 0), 0)
   let lionScore = 0
   const combinations = []
-  const visited = new Array(11).fill(0)
-  for (let search = 1; search <= n; search++) {
-    combinationDFS(visited, 0, 0, search, combinations, [])
-  }
+  binaryDFS(0, 11, combinations, [])
   let maxDiff = 0
   combinations.forEach((combLion) => {
     //1인 점수는 라이언이 가져가야 할 점수. 가져갈 점수를 위해서 몇 개의 활이 필요한지 계산하고, 만약 점수차가 가장 큰 조합이라면 추가.
