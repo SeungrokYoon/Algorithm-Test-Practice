@@ -4,10 +4,6 @@ const input = require('fs')
   .trim()
   .split('\n')
 
-const n = +input[0]
-const m = +input[1]
-const edges = input.slice(2, m + 2).map((s) => s.split(' ').map(Number))
-
 const genGraph = (edges) => {
   const graph = Array.from({ length: n + 1 }, () => Array.from({ length: n + 1 }, () => Infinity))
   for (let i = 1; i < n + 1; i++) {
@@ -31,10 +27,22 @@ const floyd = (graph) => {
   }
 }
 
+const getResult = (graph) => {
+  for (let i = 0; i < n + 1; i++) {
+    for (let j = 0; j < n + 1; j++) {
+      graph[i][j] === Infinity ? (graph[i][j] = 0) : ''
+    }
+  }
+  const result = graph.slice(1).reduce((prevRow, curRow) => {
+    return prevRow + curRow.slice(1).join(' ') + '\n'
+  }, '')
+  return result.trim()
+}
+
+const n = +input[0]
+const m = +input[1]
+const edges = input.slice(2, m + 2).map((s) => s.split(' ').map(Number))
 const graph = genGraph(edges)
 floyd(graph)
-let result = ''
-graph.slice(1).forEach((row) => {
-  result += row.slice(1).join(' ') + '\n'
-})
-console.log(result.trim())
+const result = getResult(graph)
+console.log(result)
