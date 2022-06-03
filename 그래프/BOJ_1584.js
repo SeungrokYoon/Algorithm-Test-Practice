@@ -1,20 +1,25 @@
 class MinHeap {
+  //인스턴스 생성 시에 compare함수를 같이 넘겨주어 매서드로 설정한다.
+  //함수는 1급 객체이기 때문에 가능한 방법.
+  //이렇게 하면 내부적으로 복잡한 객체의 프로퍼티로 비교를 진행할 때 로직 수정이 쉬워지고 확장성이 높아진다.
   constructor(compareFunction) {
     this.heap = []
+    this.compare = compareFunction
   }
   push(newValue) {
     this.heap.push(newValue)
     this.upheap()
   }
-  upheap(childIndex = 0) {
+  upheap(childIndex = this.heap.length - 1) {
     while (
       Math.floor((childIndex - 1) / 2) >= 0 &&
-      this.heap[Math.floor((childIndex - 1) / 2)].cost > this.heap[childIndex].cost
+      this.compare(this.heap[childIndex], this.heap[Math.floor((childIndex - 1) / 2)])
     ) {
+      const parentIndex = Math.floor((childIndex - 1) / 2)
       const temp = this.heap[childIndex]
-      this.heap[childIndex] = this.heap[Math.floor((childIndex - 1) / 2)]
-      this.heap[Math.floor((childIndex - 1) / 2)] = temp
-      childIndex = Math.floor((childIndex - 1) / 2)
+      this.heap[childIndex] = this.heap[parentIndex]
+      this.heap[parentIndex] = temp
+      childIndex = parentIndex
     }
   }
   pop() {
@@ -30,15 +35,15 @@ class MinHeap {
     }
   }
   downheap(parentIndex = 0) {
-    let childIndex = 2 * parentIndex + 1
-    while (childIndex < this.heap.length) {
+    while (2 * parentIndex + 1 < this.heap.length) {
+      let childIndex = 2 * parentIndex + 1
       if (
         childIndex + 1 < this.heap.length &&
-        this.heap[childIndex].cost > this.heap[childIndex + 1].cost
+        this.compare(this.heap[childIndex + 1], this.heap[childIndex])
       ) {
         childIndex++
       }
-      if (this.heap[parentIndex].cost <= this.heap[childIndex].cost) break
+      if (!this.compare(this.heap[childIndex], this.heap[parentIndex])) break
       const temp = this.heap[childIndex]
       this.heap[childIndex] = this.heap[parentIndex]
       this.heap[parentIndex] = temp
@@ -55,10 +60,8 @@ const input = require('fs')
   .toString()
   .trim()
   .split('\n')
-
-//죽음의 구역 - 벽, 위험한 구역 - 생명이 1씩 소모, 자유로운 이동 구역
 const weightGraph = Array.from({ length: 501 }, () => Array.from({ length: 501 }, () => 0))
-const visitGrgph = Array.from({ length: 501 }, () => Array.from({ length: 501 }, () => false))
+const visitGraph = Array.from({ length: 501 }, () => Array.from({ length: 501 }, () => false))
 const N = input[0] * 1
 const dangerousSpots = input.slice(1, 1 + N).map((s) => s.split(' ').map(Number))
 const M = input[1 + N] * 1
@@ -89,28 +92,32 @@ const overRange = (x, y) => {
   return false
 }
 
+const isFirstSmaller = (first, second) => {
+  if (first.cost < second.cost) return true
+  return false
+}
+
 const solution = () => {
-  const minHeap = new MinHeap()
+  const minHeap = new MinHeap(isFirstSmaller)
   const dRow = [0, 1, 0, -1]
   const dCol = [1, 0, -1, 0]
   weightGraph[0][0] = 0
-  visitGrgph[0][0] = true
-  minHeap.push({ row: 0, col: 0, cost: weightGraph[0][0] })
+  visitGraph[0][0] = true
+  minHeap.push({ row: 0, col: 0, cost: 0 })
   while (minHeap.size()) {
     const { row, col, cost } = minHeap.pop()
     for (let direction = 0; direction < 4; direction++) {
       const nRow = row + dRow[direction]
       const nCol = col + dCol[direction]
       if (overRange(nRow, nCol)) continue
-      if (!visitGrgph[nRow][nCol] && weightGraph[nRow][nCol] !== DEATH) {
-        visitGrgph[nRow][nCol] = true
+      if (!visitGraph[nRow][nCol] && weightGraph[nRow][nCol] !== DEATH) {
+        visitGraph[nRow][nCol] = true
         weightGraph[nRow][nCol] += cost
         minHeap.push({ row: nRow, col: nCol, cost: weightGraph[nRow][nCol] })
       }
     }
   }
-  if (visitGrgph[500][500] === 0) return -1
-  return weightGraph[500][500]
+  return visitGraph[500][500] ? weightGraph[500][500] : -1
 }
 
 console.log(solution())
