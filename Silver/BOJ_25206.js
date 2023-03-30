@@ -18,9 +18,9 @@ const convertGrade2Score = (grade) => {
 }
 
 input.reduce((acc, line) => {
-  if (grade === 'P' || grade === 'F') return acc
   const [subject, time, grade] = line.split(' ')
-  acc.totalGrade += convertGrade2Score(grade)
+  if (grade === 'P') return acc
+  acc.totalGrade += time * 1 * convertGrade2Score(grade)
   acc.totalTime += time * 1
   return acc
 }, info)
