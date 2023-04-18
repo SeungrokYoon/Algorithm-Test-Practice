@@ -89,3 +89,20 @@ console.log('permutationDFS')
 permutationDFS(0, 0, r)
 console.log('combinationDFS')
 combinationDFS(0, 0, r)
+
+//방문이 아닌, 배열에서 직접 추가하고 빼는 dfs 조합
+const combi = (i, candidates, currentLength, targetLength, slate, result) => {
+  //backtracking case
+  if (currentLength > targetLength || i >= candidates.length) return
+  //base case
+  if (currentLength === targetLength) {
+    result.push(slate.slice())
+    return
+  }
+  // dfs recursive case
+  for (let j = i; j < candidates.length; j++) {
+    slate.push(candidates[j])
+    combi(j + 1, candidates, currentLength + 1, targetLength, slate, result)
+    slate.pop()
+  }
+}
