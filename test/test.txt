@@ -1,3 +1,13 @@
-3 5
-1 2 4
-2 3 4 5 6
+12 5
+appearance
+append
+attendance
+swim
+swift
+swift
+swift
+mouse
+wallet
+mouse
+ice
+age
