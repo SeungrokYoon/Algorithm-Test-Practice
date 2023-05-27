@@ -1,45 +1,34 @@
-const [n, ...targetArr] = require('fs')
+const input = require('fs')
   .readFileSync(process.platform === 'linux' ? 'dev/stdin' : 'test/test.txt')
   .toString()
   .trim()
   .split('\n')
   .map(Number)
-const answerStr = targetArr.join('')
-const answer = []
-const resultNum = []
 
-const candidateNumberArr = new Array(n).fill(0).map((_, i) => i + 1)
-const stack = []
-while (candidateNumberArr.length || stack.length) {
-  if (candidateNumberArr.length) {
-    if (stack.length === 0) {
-      const nextNum = candidateNumberArr.shift()
-      stack.push(nextNum)
-      answer.push('+')
-    } else {
-      const top = stack[stack.length - 1]
-      if (top === targetArr[0]) {
-        const popped = stack.pop()
-        answer.push('-')
-        resultNum.push(popped)
-        targetArr.shift()
+const n = input.shift()
+
+const solution = (n, input) => {
+  let currentNum = 1
+  let resultStr = ''
+  const stack = []
+  let inputPointer = 0
+  while (currentNum < n + 1) {
+    let stop = false
+    stack.push(currentNum)
+    resultStr += '+\n'
+    while (!stop && stack.length) {
+      if (stack[stack.length - 1] === input[inputPointer]) {
+        stack.pop()
+        resultStr += '-\n'
+        inputPointer++
       } else {
-        const nextNum = candidateNumberArr.shift()
-        stack.push(nextNum)
-        answer.push('+')
+        stop = true
       }
     }
-  } else {
-    while (stack.length) {
-      const nextNum = stack.pop()
-      answer.push('-')
-      resultNum.push(nextNum)
-    }
+    currentNum++
   }
+  if (stack.length > 0) return 'NO'
+  return resultStr
 }
 
-if (resultNum.join('') === answerStr) {
-  console.log(answer.join('\n'))
-} else {
-  console.log('NO')
-}
+console.log(solution(n, input))
