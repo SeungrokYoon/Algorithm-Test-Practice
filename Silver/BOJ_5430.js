@@ -13,7 +13,7 @@ class Node {
   }
   getNextNode({ direction }) {
     switch (direction) {
-      case 1:
+      case true:
         return this.next
       default:
         return this.previous
@@ -23,10 +23,10 @@ class Node {
 
 class Deque {
   constructor(initArray) {
-    this.direction = 1
-    this.head = 0
-    this.tail = 0
+    this.head = null
+    this.tail = null
     this.size = 0
+    this.isDirectionFromHeadToTail = true
     this.error = 0
     this.init(initArray)
   }
@@ -36,23 +36,13 @@ class Deque {
     })
   }
   addNode(value) {
-    const size = this.size
+    const size = this.size++
     const newNode = new Node(value)
     if (size === 0) {
       this.head = newNode
       this.tail = newNode
-    } else if (size === 1) {
-      if (this.direction === 1) {
-        newNode.previous = this.tail
-        this.tail.next = newNode
-        this.tail = newNode
-      } else {
-        newNode.next = this.head
-        this.head.previous = newNode
-        this.head = newNode
-      }
     } else {
-      if (this.direction === 1) {
+      if (this.isDirectionFromHeadToTail) {
         newNode.previous = this.tail
         this.tail.next = newNode
         this.tail = newNode
@@ -62,7 +52,6 @@ class Deque {
         this.head = newNode
       }
     }
-    this.size += 1
   }
   deleteNode() {
     const size = this.size
@@ -71,9 +60,9 @@ class Deque {
     } else if (size === 1) {
       this.head = null
       this.tail = null
-      this.size -= 1
+      this.size = 0
     } else {
-      if (this.direction === 1) {
+      if (this.isDirectionFromHeadToTail) {
         this.head = this.head.next
         this.head.previous = null
       } else {
@@ -84,7 +73,7 @@ class Deque {
     }
   }
   reverse() {
-    this.direction *= -1
+    this.isDirectionFromHeadToTail = !this.isDirectionFromHeadToTail
   }
   operateCommand({ command }) {
     for (const c of command) {
@@ -104,12 +93,12 @@ class Deque {
       return
     }
     const l = []
-    let current = this.direction === 1 ? this.head : this.tail
-    while (current) {
-      l.push(current.value)
-      current = current.getNextNode({ direction: this.direction })
+    let currentNode = this.isDirectionFromHeadToTail ? this.head : this.tail
+    while (currentNode) {
+      l.push(currentNode.value)
+      currentNode = currentNode.getNextNode({ direction: this.isDirectionFromHeadToTail })
     }
-    console.log(l)
+    console.log('[' + l.join(',') + ']')
   }
 }
 
@@ -117,7 +106,7 @@ for (let i = 0; i < input.length; i += 3) {
   const command = input[i]
   const n = input[i + 1]
   const initialArray = input[i + 2]
-    .slice(1, -1)
+    .substring(1, input[i + 2].length - 1)
     .split(',')
     .filter((s) => s.length)
     .map(Number)
