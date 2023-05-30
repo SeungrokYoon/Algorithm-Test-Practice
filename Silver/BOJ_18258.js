@@ -23,10 +23,10 @@ input.reduce((acc, curr) => {
       break
     case 'pop':
       console.log(acc.length ? acc[0] : -1)
-      acc = acc.slice(1)
+      acc.shift()
       break
     default:
-      acc = [...acc, value]
+      acc.push(value)
   }
   return acc
 }, [])
