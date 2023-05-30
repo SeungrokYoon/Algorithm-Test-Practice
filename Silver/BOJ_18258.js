@@ -1,34 +1,95 @@
-const input = require('fs')
+const [n, ...input] = require('fs')
   .readFileSync(process.platform === 'linux' ? 'dev/stdin' : 'test/test.txt')
   .toString()
   .trim()
   .split('\n')
 
-input.shift()
-const answer = []
-input.reduce((acc, curr) => {
-  const value = curr.split(' ')[1] * 1
-  switch (curr) {
+class Node {
+  constructor(value) {
+    this.value = value
+    this.next = null
+  }
+}
+
+class Queue {
+  constructor() {
+    this.head = null
+    this.tail = null
+    this.size = 0
+    this.log = []
+  }
+  push(value) {
+    const nextNode = new Node(value)
+    if (this.size === 0) {
+      this.head = nextNode
+      this.tail = nextNode
+    } else {
+      this.tail.next = nextNode
+      this.tail = nextNode
+    }
+    this.size++
+  }
+  pop() {
+    if (this.size === 0) {
+      this.log.push(-1)
+    } else if (this.size === 1) {
+      this.log.push(this.head.value)
+      this.head = null
+      this.tail = null
+      this.size--
+    } else {
+      this.log.push(this.head.value)
+      this.head = this.head.next
+      this.size--
+    }
+  }
+  getSize() {
+    this.log.push(this.size)
+  }
+  empty() {
+    this.log.push(Number(this.size === 0))
+  }
+  front() {
+    if (this.head === null) {
+      this.log.push(-1)
+    } else {
+      this.log.push(this.head.value)
+    }
+  }
+  back() {
+    if (this.head === null) {
+      this.log.push(-1)
+    } else {
+      this.log.push(this.tail.value)
+    }
+  }
+  getLog() {
+    return this.log
+  }
+}
+
+const queue = input.reduce((queue, command) => {
+  const value = command.split(' ')[1] * 1
+  switch (command) {
     case 'front':
-      answer.push(acc.length ? acc[0] : -1)
+      queue.front()
       break
     case 'back':
-      answer.push(acc.length ? acc[acc.length - 1] : -1)
+      queue.back()
       break
     case 'size':
-      answer.push(acc.length)
+      queue.getSize()
       break
     case 'empty':
-      answer.push(Number(acc.length === 0))
+      queue.empty()
       break
     case 'pop':
-      answer.push(acc.length ? acc[0] : -1)
-      acc.shift()
+      queue.pop()
       break
     default:
-      acc.push(value)
+      queue.push(value)
   }
-  return acc
-}, [])
+  return queue
+}, new Queue())
 
-console.log(answer.join('\n'))
+console.log(queue.getLog().join('\n'))
