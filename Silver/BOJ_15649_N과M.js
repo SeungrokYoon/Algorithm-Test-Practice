@@ -7,12 +7,11 @@ const [N, M] = require('fs')
 
 const visited = new Array(N + 1).fill(false)
 const pool = []
-const result = []
+let result = ''
 
 const dfs = (visited, count, end) => {
   if (count === end) {
-    const res = pool.join(' ')
-    result.push(res)
+    result += pool.join(' ') + '\n'
     return
   }
   for (let i = 1; i < visited.length; i++) {
@@ -26,4 +25,4 @@ const dfs = (visited, count, end) => {
 }
 
 dfs(visited, 0, M)
-console.log(result.join('\n'))
+console.log(result)
