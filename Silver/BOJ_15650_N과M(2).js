@@ -6,28 +6,19 @@ const [N, M] = require('fs')
   .map(Number)
 
 let answer = ''
+let pool = []
 
-const dfs = (visited, n, m, pool, prev, count) => {
-  if (count === m) {
+function search(deps, startIndex) {
+  if (deps === M) {
     answer += pool.join(' ') + '\n'
     return
   }
-  for (let i = 1; i < n + 1; i++) {
-    if (i <= prev) continue
-    visited[i] = true
+  for (let i = startIndex; i <= N; i++) {
     pool.push(i)
-    dfs(visited, n, m, pool, i, count + 1)
-    visited[i] = false
-    pool.pop(i)
+    search(deps + 1, i + 1)
+    pool.pop()
   }
 }
-
-const solution = (N, M) => {
-  const visited = new Array(N + 1).fill(false)
-  const pool = []
-  dfs(visited, N, M, pool, 0, 0)
-}
-
-solution(N, M)
+search(0, 1)
 
 console.log(answer)
