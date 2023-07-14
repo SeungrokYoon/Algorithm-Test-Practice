@@ -17,6 +17,27 @@ function findEmptyCell(sudoku) {
   return emptyCellArr
 }
 
+function isNotDuplicateInRowColumn({ sudoku, currentRow, currentCol, candidateNum }) {
+  for (let row = 0; row < 9; row++) {
+    if (sudoku[currentRow][row] === candidateNum || sudoku[row][currentCol] === candidateNum)
+      return false
+  }
+  return true
+}
+
+function isNotDuplicateInSquare({ sudoku, currentRow, currentCol, candidateNum }) {
+  const startRow = Math.floor(currentRow / 3) * 3
+  const startCol = Math.floor(currentCol / 3) * 3
+  for (let row = startRow; row < startRow + 3; row++) {
+    for (let col = startCol; col < startCol + 3; col++) {
+      if (sudoku[row][col] === candidateNum) {
+        return false
+      }
+    }
+  }
+  return true
+}
+
 function recurseCandidateNum(depth, emptyCellCoordinateArr) {
   if (depth === emptyCellCoordinateArr.length) {
     const res = initialMap.map((l) => l.join(' ')).join('\n')
@@ -25,39 +46,25 @@ function recurseCandidateNum(depth, emptyCellCoordinateArr) {
   }
   const [currX, currY] = emptyCellCoordinateArr[depth]
   for (let candidateNum = 1; candidateNum < 10; candidateNum++) {
-    let rowClear = true
-    let colClear = true
-    let squareClear = true
-    for (let row = 0; row < 9; row++) {
-      if (initialMap[currX][row] === candidateNum) {
-        rowClear = false
-      }
-      if (initialMap[row][currY] === candidateNum) {
-        colClear = false
-      }
-    }
-    const startRow = Math.floor(currX / 3) * 3
-    const startCol = Math.floor(currY / 3) * 3
-    for (let row = startRow; row < startRow + 3; row++) {
-      for (let col = startCol; col < startCol + 3; col++) {
-        if (initialMap[row][col] === candidateNum) {
-          squareClear = false
-          break
-        }
-      }
-    }
-    if (!(colClear && rowClear && squareClear)) continue
-
+    const notDuplicateInRowColumn = isNotDuplicateInRowColumn({
+      sudoku: initialMap,
+      currentRow: currX,
+      currentCol: currY,
+      candidateNum,
+    })
+    const notDuplicateInSquare = isNotDuplicateInSquare({
+      sudoku: initialMap,
+      currentRow: currX,
+      currentCol: currY,
+      candidateNum,
+    })
+    if (!(notDuplicateInRowColumn && notDuplicateInSquare)) continue
     initialMap[currX][currY] = candidateNum
     recurseCandidateNum(depth + 1, emptyCellCoordinateArr)
     initialMap[currX][currY] = 0
   }
 }
 
-function solution() {
-  recurseCandidateNum(0, findEmptyCell(initialMap))
-}
-
-solution()
+recurseCandidateNum(0, findEmptyCell(initialMap))
 
 console.log(answer[0])
