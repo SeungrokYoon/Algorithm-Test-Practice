@@ -39,6 +39,7 @@ function isNotDuplicateInSquare({ sudoku, currentRow, currentCol, candidateNum }
 }
 
 function recurseCandidateNum(depth, emptyCellCoordinateArr) {
+  if (answer.length) return
   if (depth === emptyCellCoordinateArr.length) {
     const res = initialMap.map((l) => l.join(' ')).join('\n')
     answer.push(res)
