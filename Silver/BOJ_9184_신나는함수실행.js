@@ -3,7 +3,7 @@ const inputArr = require('fs').readFileSync(platform).toString().trim().split('\
 inputArr.pop()
 
 function getAnswerText(a, b, c, answer) {
-  return `w(${a},${b},${c}) = ${answer}`
+  return `w(${a}, ${b}, ${c}) = ${answer}`
 }
 
 const dpMap = Array.from({ length: 21 }, () => []).map((a) =>
