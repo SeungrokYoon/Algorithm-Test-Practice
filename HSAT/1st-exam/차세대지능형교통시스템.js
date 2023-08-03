@@ -6,79 +6,55 @@ const intersectionInfo = require('fs')
   .map((line) => line.split(' ').map(Number))
 const [N, T] = intersectionInfo.shift()
 
-function rotateDirectionReverseClockWise(currentArr, rotate) {
-  const newArr = currentArr.map(([i, j]) => {
-    for (let r = 0; r < rotate; r++) {
-      let tempI = i
-      i = j
-      j = parseInt(-tempI)
-    }
-    return [i, j]
-  })
-  return newArr
+const signalInfo = {
+  1: ['up', 'right', 'down'],
+  2: ['left', 'up', 'right'],
+  3: ['up', 'left', 'down'],
+  4: ['left', 'down', 'right'],
+  5: ['up', 'right'],
+  6: ['left', 'up'],
+  7: ['left', 'down'],
+  8: ['down', 'right'],
+  9: ['right', 'down'],
+  10: ['up', 'right'],
+  11: ['up', 'left'],
+  12: ['left', 'down'],
 }
-
-function genSignalMap(originDelta) {
-  const dirObj = {}
-  for (let i = 0; i < 12; i++) {
-    const quote = parseInt(i / 4)
-    const remainder = i % 4
-    const index = i + 1
-    let rowDelta = null
-    if (quote === 0) {
-      rowDelta = originDelta
-    } else if (quote === 1) {
-      rowDelta = originDelta.slice(0, 2)
-    } else {
-      rowDelta = originDelta.slice(1)
-    }
-    dirObj[index] = rotateDirectionReverseClockWise(rowDelta, remainder)
-  }
-  return dirObj
-}
+const availableSignals = { up: [2, 6, 10], right: [1, 5, 9], down: [4, 8, 12], left: [3, 7, 11] }
+//[up, right, down, left]
+const dirToDelta = { up: [-1, 0], right: [0, 1], down: [1, 0], left: [0, -1] }
 
 function validateCoorditate(x, y) {
   return x >= 0 && y >= 0 && x < N && y < N
 }
 
-const deltaMap = genSignalMap([
-  [0, -1],
-  [1, 0],
-  [0, 1],
-])
-
 const visitedMap = Array.from(Array(N), () => new Array(N).fill(0))
 
-function recursion({ currentRow, currentColumn }, currentT) {
+let answer = 0
+
+function recursion({ currentRow, currentColumn }, currDir, currentT) {
   if (currentT > T) {
     return
   }
-  if (visitedMap[currentRow][currentColumn] === 0) visitedMap[currentRow][currentColumn] = 1
-  const currentSignalArr = intersectionInfo[currentRow * N + currentColumn]
-  const signalIndex = currentT % 4
-  const currentSignalNumberByTime = currentSignalArr[signalIndex]
-  const directionsArr = deltaMap[currentSignalNumberByTime.toString()]
+  if (visitedMap[currentRow][currentColumn] === 0) {
+    visitedMap[currentRow][currentColumn] = 1
+    answer++
+  }
+  const currentIntersectionIndex = currentRow * N + currentColumn
+  const currentSignal = intersectionInfo[currentIntersectionIndex][currentT % 4]
 
-  for (const [deltaColumn, deltaRow] of directionsArr) {
-    const nextRow = currentRow + deltaRow
-    const nextColumn = currentColumn + deltaColumn
-    //recursion by dfs
-    if (validateCoorditate(nextRow, nextColumn)) {
-      //update map
-      recursion({ currentRow: nextRow, currentColumn: nextColumn }, currentT + 1)
+  if (availableSignals[currDir].includes(currentSignal)) {
+    const candidateDirections = signalInfo[currentSignal]
+    for (const nextDir of candidateDirections) {
+      const [rowDelta, columnDelta] = dirToDelta[nextDir]
+      const nextRow = currentRow + rowDelta
+      const nextColumn = currentColumn + columnDelta
+      if (!validateCoorditate(nextRow, nextColumn)) continue
+      recursion({ currentRow: nextRow, currentColumn: nextColumn }, nextDir, currentT + 1)
     }
   }
 }
 
-function solution() {
-  let answer = 0
-  recursion({ currentRow: 0, currentColumn: 0 }, 0)
-  for (let i = 0; i < N; i++) {
-    for (let j = 0; j < N; j++) {
-      if (visitedMap[i][j]) answer++
-    }
-  }
-  return answer
-}
+recursion({ currentRow: 0, currentColumn: 0 }, 'up', 0)
 
-console.log(solution())
+console.log(answer)
