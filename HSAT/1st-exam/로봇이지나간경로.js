@@ -1,91 +1,73 @@
 const input = require('fs').readFileSync(0).toString().trim().split('\n')
 const [H, W] = input[0].split(' ').map(Number)
+
 const originalMap = input.slice(1).map((l) => l.split(''))
+const visited = Array.from({ length: H }, () => Array.from({ length: W }, () => 0))
+console.log(visited)
+
+const dRow = [-1, 0, 1, 0]
+const dCol = [0, 1, 0, -1]
+
 const answerArr = []
 
 const dirToChar = { 0: '^', 1: '>', 2: 'v', 3: '<' }
-const dirToDelta = { 0: [-2, 0], 1: [0, 2], 2: [2, 0], 3: [0, -2] }
-const commands = ['L', 'R', 'A']
 
-const validateCoord = (row, col) => {
+const isWithinMatrix = (row, col) => {
   return row >= 0 && col >= 0 && row < H && col < W
 }
 
-const checkIsSame = (originalMap, visited) => {
-  for (let i = 0; i < H; i++) {
-    for (let j = 0; j < W; j++) {
-      const filled = originalMap[i][j] == '#' && visited[i][j] == 1
-      const empty = originalMap[i][j] == '.' && visited[i][j] == 0
-      if (filled || empty) continue
-      return false
-    }
-  }
-  return true
+const checkProceedable = ({ currRow, currCol, currDir, map, step }) => {
+  const nextRowWithDist = currRow + dRow[currDir] * step
+  const nextColWithDist = currCol + dCol[currDir] * step
+  if (
+    isWithinMatrix(nextRowWithDist, nextColWithDist) &&
+    map[currRow][currCol] === '#' &&
+    map[nextRowWithDist][nextColWithDist] === '#' &&
+    visited[nextRowWithDist][nextColWithDist] === 0
+  )
+    return true
+  return false
 }
 
-const temp = []
-const pool = []
-const recursion = (currRow, currCol, currDir, visited, dirVisited) => {
-  if (checkIsSame(originalMap, visited)) {
-    temp.push(pool.join(''))
-    return
+function findStartPoints(map) {
+  const points = []
+  for (let currRow = 0; currRow < H; currRow++) {
+    for (let currCol = 0; currCol < W; currCol++) {
+      let dirCounter = 0
+      const obj = { row: null, col: null, dir: null }
+      //4방향에 대해서 현재 좌표를 기준으로 탐색 진행.
+      //하나의 길이 있는 곳이 시작점
+      for (let currDir = 0; currDir < 4; currDir++) {
+        const isProceedable = checkProceedable({ currRow, currCol, currDir, map, step: 1 })
+        if (isProceedable) {
+          obj.row = currRow
+          obj.col = currCol
+          obj.dir = currDir
+          dirCounter++
+        }
+      }
+      if (dirCounter === 1) points.push(obj)
+    }
   }
-  for (const command of commands) {
-    if (command === 'L') {
-      pool.push('L')
-      const nextDir = (currDir + 3) % 4
-      if (dirVisited[nextDir]) continue
-      dirVisited[nextDir] = 1
-      recursion(currRow, currCol, nextDir, visited, dirVisited)
-      pool.pop()
-    } else if (command === 'R') {
-      pool.push('R')
-      const nextDir = (currDir + 1) % 4
-      if (dirVisited[nextDir]) continue
-      dirVisited[nextDir] = 1
-      recursion(currRow, currCol, nextDir, visited, dirVisited)
-      pool.pop()
-    } else {
-      //'A'
-      const [rowDelta, columnDelta] = dirToDelta[currDir]
-      const nextRow = currRow + rowDelta
-      const nextColumn = currCol + columnDelta
-      if (!validateCoord(nextRow, nextColumn)) continue
-      if (originalMap[nextRow][nextColumn] !== '#') continue
-      if (visited[nextRow][nextColumn]) continue
-      //방문표시
-      for (let i = 0; i < rowDelta; i++) {
-        if (visited[currRow + i][currCol] !== originalMap[currRow + i][currCol]) return
-        visited[currRow + i][currCol] = 1
-      }
-      for (let i = 0; i < columnDelta; i++) {
-        if (visited[currRow][currCol + i] !== originalMap[currRow][currCol + i]) return
-        visited[currRow][currCol + i] = 1
-      }
-      pool.push('A')
-      const nextDirVisited = [0, 0, 0, 0]
-      nextDirVisited[currDir] = 1
-      recursion(nextRow, nextColumn, currDir, visited, nextDirVisited)
-      pool.pop()
-      for (let i = 0; i < rowDelta; i++) {
-        visited[currRow + i][currCol] = 0
-      }
-      for (let i = 0; i < columnDelta; i++) {
-        visited[currRow][currCol + i] = 0
+  return points
+}
+
+const startPoints = findStartPoints(originalMap)
+
+const solution = () => {
+  const temp = []
+  const queue = [startPoints[0]]
+  while (queue.length) {
+    const { row, col, dir } = queue.shift()
+    visited[row][col] = 1
+    for (let command of ['L', 'R', 'A']) {
+      if (command === 'L') {
+        const nextDir = (dir + 3) % 4
+        const isProceedable = checkProceedable({ currRow, currCol, currDir: nextDir, map, step: 2 })
+      } else if (command === 'R') {
+        const nextDir = (dir + 1) % 4
+      } else {
       }
     }
   }
 }
-
-for (let i = 0; i < H; i++) {
-  for (let j = 0; j < W; j++) {
-    for (let dir = 0; dir < 4; dir++) {
-      const visited = Array.from(Array(H), () => new Array(W).fill(0))
-      const dirVisited = [0, 0, 0, 0]
-      dirVisited[dir] = 1
-      recursion(i, j, dir, visited, dirVisited)
-    }
-  }
-}
-
-console.log(answerArr)
