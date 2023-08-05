@@ -31,6 +31,8 @@ const dCol = [0, 1, 0, -1]
 const dirToChar = { 0: '^', 1: '>', 2: 'v', 3: '<' }
 
 const getNextCmd = (direction) => {
+  //direction===0 하던거 해라
+  //direction===1 오른쪽으로 돌려라
   switch (direction) {
     case 0:
       return 'A'
@@ -56,8 +58,6 @@ const recursion = ({ currRow, currCol, currDir, count, memoizedCmd, ...startInfo
     return
   }
   for (let i = 0; i < 4; i++) {
-    //i===0 하던거 해라
-    //i===1 오른쪽으로 돌려라
     const nextDir = (currDir + i) % 4
     const nRow = currRow + dRow[nextDir]
     const nCol = currCol + dCol[nextDir]
@@ -93,6 +93,7 @@ const solution = () => {
   for (let i = 1; i <= H; i++) {
     for (let j = 1; j <= W; j++) {
       if (originalMap[i][j] !== '#') continue
+      //인접한 '#'이 하나만 있는 좌표가 시작점 또는 끝점
       let adjCounter = 0
       for (let d = 0; d < 4; d++) {
         const adjRow = i + dRow[d]
@@ -102,14 +103,13 @@ const solution = () => {
       }
       if (adjCounter !== 1) continue
       for (let direction = 0; direction < 4; direction++) {
-        //visited초기화해줍니다.
+        //visited초기화
         for (let i = 0; i < H; i++) {
           for (let j = 0; j < W; j++) {
             visited[i][j] = 0
           }
         }
-        // console.log(i,j,direction)
-        //처음 로봇이 바라보는 방향만 설정해줍니다
+        //처음 로봇이 바라보는 방향만 설정해주면서 재귀. 따라서 한 좌표에 대해서 4방향으로 검증을 하게 된다.
         visited[i][j] = 1
         recursion({
           currRow: i,
@@ -128,7 +128,8 @@ const solution = () => {
 }
 
 solution()
-answerArr.sort((a, b) => b.cmd.localeCompare(a.cmd))
+const sortByCmd = (a, b) => b.cmd.localeCompare(a.cmd)
+answerArr.sort(sortByCmd)
 const ans = answerArr.pop()
 console.log(`${ans.row} ${ans.col}`)
 console.log(ans.dir)
