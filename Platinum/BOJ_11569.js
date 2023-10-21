@@ -6,22 +6,30 @@ const input = require('fs')
 
 input.shift()
 
+class Node {
+  constructor(idx, val) {
+    this.idx = idx
+    this.val = val
+  }
+}
+
 class MinHeap {
   constructor() {
     this.heap = []
   }
-  insert(num) {
-    this.heap.push(num)
+  insert(idx, num) {
+    const nextNode = new Node(idx, num)
+    this.heap.push(nextNode)
     this.upHeap()
   }
   upHeap() {
     if (this.heap.length === 1) return
     let currIdx = this.heap.length - 1
-    while (currIdx > 0) {
-      const parentIdx = Math.floor(this.heap / 2) - 1
+    while (parseInt((currIdx - 1) / 2 > 0)) {
+      const parentIdx = parseInt((currIdx - 1) / 2)
       const parentNode = this.heap[parentIdx]
       const childNode = this.heap[currIdx]
-      if (parentNode > childNode) {
+      if (parentNode.val > childNode.val) {
         const temp = parentNode
         this.heap[parentIdx] = childNode
         this.heap[currIdx] = temp
@@ -36,23 +44,30 @@ class MinHeap {
       console.log('Empty heap')
       return null
     }
-    const popped = this.heap[0]
+    const poppedNode = this.heap[0]
+    if (this.heap.length === 1) {
+      this.heap.pop()
+      return poppedNode
+    }
     this.heap[0] = this.heap[this.heap.length - 1]
     this.heap.pop()
     this.downHeap()
-    return popped
+    return poppedNode
   }
   downHeap() {
     if (this.isEmpty() || this.heap.length === 1) return
     let currIdx = 0
-    while (currIdx < this.heap.length) {
-      const leftChildIdx = 2 * currIdx - 1
-      const rightChildIdx = 2 * currIdx
+    while (2 * currIdx + 1 < this.heap.length) {
+      const leftChildIdx = 2 * currIdx + 1
+      const rightChildIdx = 2 * currIdx + 2
       const childIdx =
-        this.heap[leftChildIdx] < this.heap[rightChildIdx] ? leftChildIdx : rightChildIdx
+        rightChildIdx < this.heap.length &&
+        this.heap[leftChildIdx].val > this.heap[rightChildIdx].val
+          ? rightChildIdx
+          : leftChildIdx
       const parentNode = this.heap[currIdx]
       const childNode = this.heap[childIdx]
-      if (parentNode > childNode) {
+      if (parentNode.val > childNode.val) {
         const temp = parentNode
         this.heap[currIdx] = childNode
         this.heap[childIdx] = temp
@@ -66,16 +81,28 @@ class MinHeap {
   }
 }
 
-function solution(start, end, matrix) {
-  const dpTable = [...matrix[start]]
+function solution(start, end, matrix, intervals) {
+  const dpTable = Array.from({ length: matrix.length }, () => Infinity)
   const minHeap = new MinHeap()
-  const visited = Array.from({ length: matrix.length + 1 }, () => false)
+  const visited = Array.from({ length: matrix.length }, () => false)
   visited[0] = true
-  visited[start] = true
+  minHeap.insert(start, 0)
 
   while (visited.some((el) => el === false)) {
-    //find the lest dist vertex
+    const poppedNode = minHeap.pop()
+    if (visited[poppedNode.idx]) continue
+    for (let i = 1; i < matrix.length; i++) {
+      if (visited[i]) continue
+      visited[poppedNode.idx] = true
+      const fromPoppedToI = matrix[poppedNode.idx][i]
+      if (dpTable[i] > poppedNode.val + fromPoppedToI) {
+        const nextDistance = poppedNode.val + fromPoppedToI
+        dpTable[i] = nextDistance
+        minHeap.insert(i, nextDistance)
+      }
+    }
   }
+  return dpTable[end]
 }
 
 const getAnswer = () => {
@@ -86,16 +113,16 @@ const getAnswer = () => {
   while (currI < data.length) {
     const [N, M, S, D] = data[currI]
     const intersections = data.slice(currI, currI + M + 1)
-    const adjMatrix = Array.from({ length: N }, (_, i) =>
-      Array.from({ length: N }, (_, j) => (j === 1 ? 0 : 1)),
+    const intervals = data[currI + M + 1]
+    const adjMatrix = Array.from({ length: N + 1 }, (_, i) =>
+      Array.from({ length: N + 1 }, (_, j) => (i === j ? 0 : Infinity)),
     )
     intersections.forEach(([v, t, distance]) => {
       adjMatrix[t][v] = distance
       adjMatrix[v][t] = distance
     })
-
-    answer.push(solution(S, D, adjMatrix))
-    currI += M + 1
+    answer.push(solution(S, D, adjMatrix, intervals))
+    currI += M + 2
   }
   return answer
 }
