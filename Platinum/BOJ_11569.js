@@ -160,14 +160,14 @@ function solution(start, end, graph) {
     const routingGraphNode = graph.getNode(routingHeapNode.idx)
     if (routingGraphNode.getVisited() === true) continue
     routingGraphNode.setVisited(true)
-    const routingOrderOfPrevNode = Object.keys(routingGraphNode.getAdjNodes()).findIndex(
-      (el) => el === routingHeapNode.prev + '',
-    )
-    for (const targetNodeNumber of Object.keys(routingGraphNode.getAdjNodes()).map(Number)) {
-      const targetGraphNode = graph.getNode(targetNodeNumber)
+    const adjObj = Object.keys(routingGraphNode.getAdjNodes())
+    const routingOrderOfPrevNode = adjObj.findIndex((el) => el === routingHeapNode.prev + '')
+    for (let destNodeNumber of adjObj) {
+      destNodeNumber = parseInt(destNodeNumber)
+      const destGraphNode = graph.getNode(destNodeNumber)
       const unvisitable =
-        graph.getNode(targetNodeNumber).getVisited() === true ||
-        routingGraphNode.adjNodes[targetNodeNumber].dist === Infinity
+        destGraphNode.getVisited() === true ||
+        routingGraphNode.adjNodes[destNodeNumber].dist === Infinity
       if (unvisitable) continue
       const timeForPrevNodeToPassRoutingNode = getValidTime(
         routingHeapNode.val,
@@ -176,11 +176,11 @@ function solution(start, end, graph) {
         Object.keys(routingGraphNode.getAdjNodes()).length,
       )
       const nextDist =
-        timeForPrevNodeToPassRoutingNode + routingGraphNode.adjNodes[targetNodeNumber].dist
-      const updatable = targetGraphNode.getDistFromStart() > nextDist
-      if (updatable) {
-        targetGraphNode.setDistFromStart(nextDist)
-        minHeap.insert(targetNodeNumber, nextDist, routingHeapNode.idx)
+        timeForPrevNodeToPassRoutingNode + routingGraphNode.adjNodes[destNodeNumber].dist
+      const isUpdatable = destGraphNode.getDistFromStart() > nextDist
+      if (isUpdatable) {
+        destGraphNode.setDistFromStart(nextDist)
+        minHeap.insert(destNodeNumber, nextDist, routingHeapNode.idx)
       }
     }
   }
