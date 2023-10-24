@@ -6,7 +6,7 @@ const input = require('fs')
 
 let remainingTests = +input.shift()
 
-class Node {
+class HeapNode {
   constructor(idx, val, prev) {
     this.idx = idx
     this.val = val
@@ -19,7 +19,7 @@ class MinHeap {
     this.heap = []
   }
   insert(idx, num, prev) {
-    const nextNode = new Node(idx, num, prev)
+    const nextNode = new HeapNode(idx, num, prev)
     this.heap.push(nextNode)
     this.upHeap()
   }
@@ -84,63 +84,109 @@ class MinHeap {
 
 class Graph {
   constructor(N) {
-    this.heapq = new MinHeap()
-    this.adjMatrix = Array.from({ length: N + 1 }, (_, i) => [])
-    this.dpTable = Array.from({ length: N + 1 }, () => Infinity)
-    this.visited = Array.from({ length: N + 1 }, () => false)
-    this.interval = [0]
+    this.graph = []
+    this.init(N)
   }
-  init(edges, intervals) {
-    edges.forEach((el) => {
-      const [v, t, distance] = el
-      this.adjMatrix[t].push({ v, distance })
-      this.adjMatrix[v].push({ v, distance })
-    })
-    this.interval = [...this.interval, ...intervals]
+  init(N) {
+    for (let i = 1; i <= N; i++) {
+      this.graph.push(new GraphNode(i))
+    }
+  }
+  addEdge(start, dest, dist) {
+    this.getNode(start).adjNodes[dest] = { nodeNum: dest, dist }
+    this.getNode(dest).adjNodes[start] = { nodeNum: start, dist }
+  }
+  addIntervals(intervalArr) {
+    for (let i = 0; i < intervalArr.length; i++) {
+      this.getNode(i + 1).setInterval(intervalArr[i])
+    }
+  }
+  getNode(num) {
+    return this.graph[num - 1]
+  }
+  print() {
+    console.log(this.graph)
   }
 }
 
-function solution(start, end, matrix, intervals) {
+class GraphNode {
+  constructor(nodeNum) {
+    this.nodeNum = nodeNum
+    this.distFromStart = Infinity
+    this.visited = false
+    this.adjNodes = {}
+    this.interval = -1
+  }
+  getInterval() {
+    return this.interval
+  }
+  setInterval(n) {
+    this.interval = n
+  }
+  getDistFromStart() {
+    return this.distFromStart
+  }
+  setDistFromStart(n) {
+    this.distFromStart = n
+  }
+  getVisited() {
+    return this.visited
+  }
+  setVisited(visited) {
+    this.visited = visited
+  }
+  getAdjNodes() {
+    return this.adjNodes
+  }
+}
+
+function solution(start, end, graph) {
   const minHeap = new MinHeap()
-  const dpTable = Array.from({ length: matrix.length }, () => Infinity)
-  const visited = Array.from({ length: matrix.length }, () => false)
-  dpTable[start] = 0
-  visited[0] = true
-  visited[start] = true
-  for (let i = 1; i < matrix.length; i++) {
-    if (matrix[start][i] === Infinity) continue
-    minHeap.insert(i, matrix[start][i], start)
-    dpTable[i] = matrix[start][i]
+  graph.getNode(start).setDistFromStart(0)
+  graph.getNode(start).setVisited(true)
+
+  const adjNodeOfStart = graph.getNode(start).getAdjNodes()
+
+  for (const node in adjNodeOfStart) {
+    const { nodeNum, dist } = adjNodeOfStart[node]
+    if (graph.getNode(node).getVisited()) continue
+    minHeap.insert(nodeNum, dist, start)
+    graph.getNode(node).setDistFromStart(dist)
   }
 
   while (!minHeap.isEmpty()) {
-    const routingNode = minHeap.pop()
-    if (visited[routingNode.idx] === true) continue
-    visited[routingNode.idx] = true
-    const connectedNodes = matrix[routingNode.idx]
-      .map((el, i) => [i, el])
-      .filter((el) => el[1] !== Infinity && el[1] !== 0)
-    const routingOrderOfPrevNode = connectedNodes.findIndex((el) => el[0] === routingNode.prev)
-    for (let targetNodeNumber = 1; targetNodeNumber < matrix.length; targetNodeNumber++) {
+    const routingHeapNode = minHeap.pop()
+    if (routingHeapNode.idx === end) break
+    const routingGraphNode = graph.getNode(routingHeapNode.idx)
+    if (routingGraphNode.getVisited() === true) continue
+    routingGraphNode.setVisited(true)
+    const routingOrderOfPrevNode = Object.keys(routingGraphNode.getAdjNodes()).findIndex(
+      (el) => el === routingHeapNode.prev + '',
+    )
+    for (const targetNodeNumber of Object.keys(routingGraphNode.getAdjNodes()).map(Number)) {
+      const targetGraphNode = graph.getNode(targetNodeNumber)
       const unvisitable =
-        visited[targetNodeNumber] === true || matrix[routingNode.idx][targetNodeNumber] === Infinity
+        graph.getNode(targetNodeNumber).getVisited() === true ||
+        routingGraphNode.adjNodes[targetNodeNumber].dist === Infinity
       if (unvisitable) continue
-      const interValOfRouting = intervals[targetNodeNumber - 1]
       const timeForPrevNodeToPassRoutingNode = getValidTime(
-        routingNode.val,
+        routingHeapNode.val,
         routingOrderOfPrevNode,
-        interValOfRouting,
-        connectedNodes.length,
+        routingGraphNode.getInterval(),
+        Object.keys(routingGraphNode.getAdjNodes()).length,
       )
-      const nextDist = timeForPrevNodeToPassRoutingNode + matrix[routingNode.idx][targetNodeNumber]
-      const updatable = dpTable[targetNodeNumber] > nextDist
+      const nextDist =
+        timeForPrevNodeToPassRoutingNode + routingGraphNode.adjNodes[targetNodeNumber].dist
+      const updatable = targetGraphNode.getDistFromStart() > nextDist
       if (updatable) {
-        dpTable[targetNodeNumber] = nextDist
-        minHeap.insert(targetNodeNumber, nextDist, routingNode.idx)
+        targetGraphNode.setDistFromStart(nextDist)
+        minHeap.insert(targetNodeNumber, nextDist, routingHeapNode.idx)
       }
     }
   }
-  return dpTable[end] === Infinity ? -1 : dpTable[end]
+
+  const endDist = graph.getNode(end).getDistFromStart()
+  return endDist === Infinity ? -1 : endDist
 }
 
 const getValidTime = (
@@ -174,16 +220,14 @@ const getAnswer = () => {
   let currI = 0
   while (remainingTests--) {
     const [N, M, S, D] = data[currI]
-    const adjMatrix = Array.from({ length: N + 1 }, (_, i) =>
-      Array.from({ length: N + 1 }, (_, j) => (i === j ? 0 : Infinity)),
-    )
+    const graph = new Graph(N)
     for (let i = currI + 1; i < currI + M + 1; i++) {
-      const [v, t, distance] = data[i]
-      adjMatrix[t][v] = distance
-      adjMatrix[v][t] = distance
+      const [start, dest, distance] = data[i]
+      graph.addEdge(start, dest, distance)
     }
     const intervals = data[currI + M + 1]
-    answer += solution(S, D, adjMatrix, intervals) + '\n'
+    graph.addIntervals(intervals)
+    answer += solution(S, D, graph) + '\n'
     currI += M + 2
   }
   return answer.trim()
