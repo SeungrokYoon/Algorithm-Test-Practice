@@ -14,7 +14,7 @@ for (let row = 1; row < firstStr.length + 1; row++) {
     const colChar = secondStr[col - 1]
     dpTable[row][col] =
       rowChar === colChar
-        ? Math.max(dpTable[row - 1][col - 1] + 1, dpTable[row][col - 1], dpTable[row - 1][col])
+        ? dpTable[row - 1][col - 1] + 1
         : Math.max(dpTable[row - 1][col - 1], dpTable[row][col - 1], dpTable[row - 1][col])
   }
 }
