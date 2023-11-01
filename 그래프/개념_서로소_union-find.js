@@ -7,8 +7,10 @@ const testEdges = [
 ]
 
 const findParent = (parent, x) => {
-  if (parent[x] != x) return findParent(parent, parent[x])
-  return x
+  if (parent[x] != x) {
+    parent[x] = findParent(parent, parent[x])
+  }
+  return parent[x]
 }
 
 const unionParent = (parent, a, b) => {
