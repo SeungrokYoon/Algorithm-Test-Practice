@@ -35,3 +35,14 @@ for (let i = 1; i < nodes + 1; i++) {
 }
 
 console.log(parent)
+
+/** 무방향 그래프에서의 사이클 판별 */
+
+let cycle = false
+for (const [node1, node2] of testEdges) {
+  if (findParent(parent, node1) === findParent(parent, node2)) {
+    cycle = true
+    break
+  }
+  unionParent(parent, node1, node2)
+}
