@@ -21,13 +21,13 @@ class Deque {
     this.rear = null
   }
   printLength() {
-    console.log(this.length)
+    return this.length
   }
   isEmpty() {
     return this.length === 0
   }
   printIsEmpty() {
-    console.log(this.isEmpty() ? 1 : 0)
+    return this.isEmpty() ? 1 : 0
   }
   pushFront(value) {
     const nextNode = new Node(value)
@@ -35,8 +35,8 @@ class Deque {
       this.head = nextNode
       this.rear = nextNode
     } else {
-      this.head.prev = nextNode
       nextNode.next = this.head
+      this.head.prev = nextNode
       this.head = nextNode
     }
     this.length++
@@ -47,42 +47,57 @@ class Deque {
       this.head = nextNode
       this.rear = nextNode
     } else {
-      this.rear.next = nextNode
       nextNode.prev = this.rear
+      this.rear.next = nextNode
       this.rear = nextNode
     }
     this.length++
   }
   popFront() {
-    if (!this.isEmpty()) {
-      const popped = this.head
+    if (this.length > 1) {
+      const poppedValue = this.head.value
       const next = this.head.next
       next.prev = null
       this.head = next
-      console.log(popped.value)
       this.length--
-      return
+      return poppedValue
+    } else if (this.length === 1) {
+      const poppedValue = this.head.value
+      this.head = null
+      this.rear = null
+      this.length--
+      return poppedValue
     }
-    console.log(-1)
+    return -1
   }
   popRear() {
-    if (!this.isEmpty()) {
-      const popped = this.rear
+    if (this.length > 1) {
+      const poppedValue = this.rear.value
       const prev = this.rear.prev
       prev.next = null
       this.rear = prev
-      console.log(popped.value)
       this.length--
-      return
+      return poppedValue
+    } else if (this.length === 1) {
+      const poppedValue = this.rear.value
+      this.length--
+      this.head = null
+      this.rear = null
+      return poppedValue
     }
-    console.log(-1)
+    return -1
   }
   logFront() {
-    console.log(!this.isEmpty() ? this.head.value : -1)
+    return !this.isEmpty() ? this.head.value : -1
   }
   logRear() {
-    console.log(!this.isEmpty() ? this.rear.value : -1)
+    return !this.isEmpty() ? this.rear.value : -1
   }
+}
+
+let answer = ''
+const updateAnswer = (value) => {
+  answer += value + '\n'
 }
 
 const deque = new Deque()
@@ -93,16 +108,18 @@ for (let i = 1; i < N + 1; i++) {
   } else if (cmd === 2) {
     deque.pushRear(value)
   } else if (cmd === 3) {
-    deque.popFront()
+    updateAnswer(deque.popFront())
   } else if (cmd === 4) {
-    deque.popRear()
+    updateAnswer(deque.popRear())
   } else if (cmd === 5) {
-    deque.printLength()
+    updateAnswer(deque.printLength())
   } else if (cmd === 6) {
-    deque.printIsEmpty()
+    updateAnswer(deque.printIsEmpty())
   } else if (cmd === 7) {
-    deque.logFront()
+    updateAnswer(deque.logFront())
   } else {
-    deque.logRear()
+    updateAnswer(deque.logRear())
   }
 }
+
+console.log(answer.trim())
