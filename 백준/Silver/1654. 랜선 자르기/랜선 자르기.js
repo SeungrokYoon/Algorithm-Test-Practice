@@ -12,18 +12,10 @@ const calcNumberOfLans = (arr, divider) => {
 
 const [K, N] = input[0].split(' ').map(Number)
 const lans = input.slice(1).map(Number)
-const { min, max } = lans.reduce(
-  (acc, curr) => {
-    acc.max = Math.max(acc.max, curr)
-    acc.min = Math.min(acc.min, curr)
-    return acc
-  },
-  { max: 0, min: 2 ** 31 },
-)
+const max = Math.max(...lans)
 
 let left = 1
 let right = max + 1
-let answer = 0
 
 while (left < Math.floor((left + right) / 2)) {
   const mid = Math.floor((left + right) / 2)
