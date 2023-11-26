@@ -35,29 +35,32 @@ class Queue {
   }
 }
 
-const answer = input.slice(1).reduce((queue, command) => {
-  if (command.startsWith('push')) {
-    queue.push(command.split(' ').map(Number)[1])
-  } else {
-    switch (command) {
-      case 'pop':
-        queue.updateHistory(queue.pop())
-        break
-      case 'size':
-        queue.updateHistory(queue.size())
-        break
-      case 'empty':
-        queue.updateHistory(queue.empty())
-        break
-      case 'front':
-        queue.updateHistory(queue.front())
-        break
-      case 'back':
-        queue.updateHistory(queue.back())
-        break
+const answer = input
+  .slice(1)
+  .reduce((queue, command) => {
+    if (command.startsWith('push')) {
+      queue.push(command.split(' ').map(Number)[1])
+    } else {
+      switch (command) {
+        case 'pop':
+          queue.updateHistory(queue.pop())
+          break
+        case 'size':
+          queue.updateHistory(queue.size())
+          break
+        case 'empty':
+          queue.updateHistory(queue.empty())
+          break
+        case 'front':
+          queue.updateHistory(queue.front())
+          break
+        case 'back':
+          queue.updateHistory(queue.back())
+          break
+      }
     }
-  }
-  return queue
-}, new Queue())
+    return queue
+  }, new Queue())
+  .printHistory()
 
-console.log(answer.printHistory())
+console.log(answer)
