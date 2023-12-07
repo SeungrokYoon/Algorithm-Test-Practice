@@ -3,15 +3,18 @@ const N = +require('fs')
   .toString()
   .trim()
 
-const dp = Array.from({ length: N + 1 }, () => 0)
+const dp = Array.from({ length: 50000 + 1 }, () => 0)
 
-for (let i = 1; i < N + 1; i++) {
-  const closestSquareRoot = Math.floor(Math.sqrt(i))
-  let min = 4
-  for (let j = 1; j < closestSquareRoot + 1; j++) {
-    min = Math.min(min, dp[i - j ** 2])
+const solution = (n) => {
+  for (let i = 1; i < N + 1; i++) {
+    const closestSquareRoot = Math.floor(Math.sqrt(i))
+    let min = N + 1
+    for (let j = 1; j < closestSquareRoot + 1; j++) {
+      min = Math.min(min, dp[i - j ** 2])
+    }
+    dp[i] = 1 + min
   }
-  dp[i] = 1 + min
+  return dp[n]
 }
 
-console.log(dp[N])
+console.log(solution(N))
