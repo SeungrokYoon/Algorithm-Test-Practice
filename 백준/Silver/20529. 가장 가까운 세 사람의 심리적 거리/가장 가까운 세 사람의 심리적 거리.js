@@ -1,5 +1,3 @@
-const { log } = require('console')
-
 const input = require('fs')
   .readFileSync(process.platform === 'linux' ? 'dev/stdin' : 'test/test.txt')
   .toString()
@@ -38,6 +36,11 @@ const combi = (arr, depth, target, pool, answer) => {
   return answer
 }
 
+/**
+ * N의 크기가 너무나도 크기에, 입력된 N으로 바로 조합을 사용하기에는 무리가 있음
+그래서 한정된 MBTI 조합을 만들고, 이 조합을 주어진 사람들로 만들 수 있는지 판단하는 전략을 세우고 이를 구현하였다.
+*/
+
 const combiThree = combi(MBTI_ARR, 0, 3, [], [])
 const calcDistBetween3 = (a, b, c) => {
   let dist = 0
@@ -59,7 +62,7 @@ for (let i = 1; i < input.length; i += 2) {
   }, {})
   let minDist = 12
   combiThree.forEach(([a, b, c]) => {
-    //해당 조합이 peopleObj에서 가능한 조합인지
+    //해당 조합이 peopleObj에서 가능한 조합인지 판단하고, minDist를 갱신해나감
     if (!(peopleObj[a] && peopleObj[b] && peopleObj[c])) return
     if (a === b && b === c) {
       if (peopleObj[a] >= 3) {
