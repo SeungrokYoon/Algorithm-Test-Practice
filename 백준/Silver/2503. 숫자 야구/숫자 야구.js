@@ -30,7 +30,7 @@ const dfs = (dep, target) => {
 dfs(0, TARGET)
 
 //filter based on input
-const solution = (candidateStr) => {
+const filterHelper = (candidateStr) => {
   return (questionStr, strike, ball) => {
     const ballSet = new Set(candidateStr.split('').map(Number))
     let currStrike = 0
@@ -54,7 +54,7 @@ input.slice(1).forEach((l) => {
   let [questionStr, strike, ball] = l.split(' ')
   strike = Number(strike)
   ball = Number(ball)
-  answer = answer.filter((candidateStr) => solution(candidateStr)(questionStr, strike, ball))
+  answer = answer.filter((candidateStr) => filterHelper(candidateStr)(questionStr, strike, ball))
 })
 
 console.log(answer.length)
