@@ -15,7 +15,7 @@ const TOTAL_BUDGET = +input[2]
 const solution = () => {
   let left = 0
   let right = BUDGET_REQUESTS[BUDGET_REQUESTS.length - 1]
-  let optimal = 0
+
   while (left <= right) {
     const mid = Math.floor((left + right) / 2)
     const calculatedTotal = BUDGET_REQUESTS.reduce((acc, curr) => {
@@ -24,14 +24,11 @@ const solution = () => {
     }, 0)
     if (calculatedTotal <= TOTAL_BUDGET) {
       left = mid + 1
-      optimal = Math.max(optimal, mid)
-    } else if (calculatedTotal < TOTAL_BUDGET) {
-      left = mid + 1
     } else {
       right = mid - 1
     }
   }
-  return optimal
+  return right
 }
 
 console.log(solution())
